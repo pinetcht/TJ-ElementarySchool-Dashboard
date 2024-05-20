@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
@@ -16,21 +16,18 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-
 import HomeIcon from '@mui/icons-material/Home';
 import ClassIcon from '@mui/icons-material/Class';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import SchoolIcon from '@mui/icons-material/School';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import { Link, useLocation } from 'react-router-dom';
 
-
-//Boiler plate componets to render for testing navbar functionality from online 
-const Calendar = () => <Typography paragraph>Calendar Component</Typography>;
-const ClassPage = () => <Typography paragraph>Class Page Component</Typography>;
-const StudentDirectory = () => <Typography paragraph>Student Directory</Typography>;
-const TeacherDirectory = () => <Typography paragraph>Teacher Directory</Typography>;
-const Home = () => <Typography paragraph>Welcome to the Home Page!</Typography>;
-
+import Home from "../roots/Home.jsx"
+import Classes from "../roots/Classes.jsx"
+import Students from "../roots/Students.jsx"
+import Teachers from "../roots/Teachers.jsx"
+import Calendar from "../roots/Calendar.jsx"
 
 
 
@@ -62,7 +59,6 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'flex-end',
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 
@@ -101,11 +97,10 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-export default function Navbar() {
+const Navbar = () => {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [activeComponent, setActiveComponent] = React.useState('Home');
-
+  const location = useLocation();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -115,20 +110,20 @@ export default function Navbar() {
     setOpen(false);
   };
 
-  const renderComponent = () => {
-    switch (activeComponent) {
-      case 'Home':
-        return <Home />;
-      case 'Class Page':
-        return <ClassPage />;
-      case 'Student Directory':
-        return <StudentDirectory />;
-      case 'Teacher Directory':
-        return <TeacherDirectory />;
-      case 'Calendar':
+  const renderContent = () => {
+    switch (location.pathname) {
+      case '/':
+        return <Home/>;
+      case '/classes':
+        return <Classes />;
+      case '/students':
+        return <Students />;
+      case '/teachers':
+        return <Teachers />;
+      case '/calendar':
         return <Calendar />;
       default:
-        return <Home />;
+        return <Home/>;
     }
   };
 
@@ -162,16 +157,22 @@ export default function Navbar() {
         </DrawerHeader>
         <Divider />
         <List>
-          {['Home', 'Class Page', 'Student Directory', 'Teacher Directory', 'Calendar'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+          {[
+            { text: 'Home', icon: <HomeIcon />, path: '/' },
+            { text: 'Class Page', icon: <ClassIcon />, path: '/classes' },
+            { text: 'Student Directory', icon: <SchoolIcon />, path: '/students' },
+            { text: 'Teacher Directory', icon: <SupervisorAccountIcon />, path: '/teachers' },
+            { text: 'Calendar', icon: <CalendarMonthIcon />, path: '/calendar' },
+          ].map((item, index) => (
+            <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',
                   px: 2.5,
                 }}
-                onClick={() => setActiveComponent(text)}
-
+                component={Link}
+                to={item.path}
               >
                 <ListItemIcon
                   sx={{
@@ -180,15 +181,9 @@ export default function Navbar() {
                     justifyContent: 'center',
                   }}
                 >
-                  {index === 0 ? <HomeIcon /> : <></>}
-                  {index === 1 ? <ClassIcon /> : <></>}
-                  {index === 2 ? <SchoolIcon /> : <></>}
-                  {index === 3 ? <SupervisorAccountIcon /> : <></>}
-                  {index === 4 ? <CalendarMonthIcon /> : <></>}
-
-
+                  {item.icon}
                 </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
             </ListItem>
           ))}
@@ -196,11 +191,12 @@ export default function Navbar() {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        
-                {renderComponent()}
-
+        <div>
+        {renderContent()}
+        </div>
       </Box>
     </Box>
   );
-}
+};
 
+export default Navbar;
