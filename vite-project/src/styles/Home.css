@@ -1,0 +1,100 @@
+.image-container {
+    position: relative;
+    width: 100%;
+    height: 30vh; 
+    overflow: hidden;
+  }
+  
+  .full-width-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(25, 118, 210, 0.5) 30%, rgba(255, 255, 255, 0.3) 100%);
+    z-index: 1;
+}
+
+  
+#homePageCardHeader{
+    margin-bottom: 2vh;
+}
+
+#homePageCardDesc{
+    margin-bottom: 1.5vh;
+}
+
+#homePageCard{
+    height: 23vh;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); 
+    margin-top: 2vh;
+    margin-left: 2vh;
+    margin-right: 2vh;
+    
+}
+
+#homePageCardContent{
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;
+    height: 100%; 
+}
+
+#homePageCardBtn{
+    width: 40%;
+}
+
+.homeScreenHeader {
+    position: absolute;
+    top: 27%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2; 
+    color: white; 
+    font-size: 6em; 
+    text-align: center; 
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 1s ease-in-out;
+    font-family: 'Lato', sans-serif;
+  }
+
+  .homePageHr{
+    margin-top: 2vh;
+  }
+
+  @media only screen and (max-width: 800px) {
+    #homePageCardBtn{
+        font-size: 10px;
+    }
+    .homeScreenHeader {
+      font-size: 4em;
+    }
+    .image-container {
+      height: 20vh; 
+
+    }
+}
+
+#animatedCount{
+  margin-bottom: 2vh;
+}
+
+@keyframes fadeIn {
+  0% { opacity: .4; }
+  100% { opacity: 1; }
+}
+
+.spanHome{
+  animation: fadeIn 2s ease-in-out;
+}
+
+.nothing{
+  color: #f5f2f2; 
+}
