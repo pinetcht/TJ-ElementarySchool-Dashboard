@@ -1,23 +1,33 @@
-import React, { useState } from 'react';
-
-
-const teachersData = [
-  { name: 'Ms. Johnson', department: 'Science', phone: 'XXX-XXX-XXXX' },
-  { name: 'Mr. Larry', department: 'Launch', phone: 'XXX-XXX-XXXX' },
-  { name: 'Mr. Ritter', department: 'SWE', phone: 'XXX-XXX-XXXX' },
-  { name: 'Mr. Wembanyama', department: 'History', phone: 'XXX-XXX-XXXX' },
-  { name: 'Ms. Sandy', department: '', phone: 'XXX-XXX-XXXX' },
-  { name: 'Ms. Mary', department: 'Math', phone: 'XXX-XXX-XXXX' },
-];
+import React, { useState, useEffect } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const Teachers = () => {
-  const [teachers, setTeachers] = useState(teachersData);
+  const [teachers, setTeachers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTeacher, setSelectedTeacher] = useState(null);
 
+  const fetchTeachers = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'teachers'));
+      const teachersList = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setTeachers(teachersList);
+    } catch (error) {
+      console.error("Error fetching teacher data: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTeachers();
+  }, []);
+
   const handleSearch = () => {
-    const filteredTeachers = teachersData.filter(teacher =>
-      teacher.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredTeachers = teachers.filter(teacher =>
+      teacher.First.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      teacher.Last.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setTeachers(filteredTeachers);
   };
@@ -44,13 +54,13 @@ const Teachers = () => {
           />
           <button onClick={handleSearch}>Search</button>
           <div className="teacher-list">
-            {teachers.map((teacher, index) => (
-              <div className="teacher-item" key={index} onClick={() => handleTeacherClick(teacher)}>
+            {teachers.map((teacher) => (
+              <div className="teacher-item" key={teacher.id} onClick={() => handleTeacherClick(teacher)}>
                 <div className="teacher-avatar"></div>
                 <div className="teacher-info">
-                  <p className="teacher-name">{teacher.name}</p>
-                  <p className="teacher-department">{teacher.department}</p>
-                  <p className="teacher-phone">{teacher.phone}</p>
+                  <p className="teacher-name">{teacher.First} {teacher.Last}</p>
+                  <p className="teacher-department">{teacher.Subject}</p>
+                  <p className="teacher-phone">Age: {teacher.Age}</p>
                 </div>
               </div>
             ))}
@@ -60,23 +70,23 @@ const Teachers = () => {
           {selectedTeacher ? (
             <div className="teacher-detail">
               <div className="teacher-avatar-large"></div>
-              <h3>{selectedTeacher.name}</h3>
+              <h3>{selectedTeacher.First} {selectedTeacher.Last}</h3>
               <div className="teacher-contact">
                 <h4>Contact Information</h4>
-                <p>Office Tel: {selectedTeacher.phone}</p>
-                <p>Mobile: XXX-XXX-XXXX</p>
-                <p>Email: example@example.com</p>
+                <p>Office Tel: {selectedTeacher.OfficeTel || 'N/A'}</p>
+                <p>Mobile: {selectedTeacher.Mobile || 'N/A'}</p>
+                <p>Email: {selectedTeacher.Email || 'N/A'}</p>
               </div>
               <div className="teacher-work">
                 <h4>Work Information</h4>
-                <p>Department: {selectedTeacher.department}</p>
-                <p>Supervisor: Mr. Smith</p>
+                <p>Department: {selectedTeacher.Subject}</p>
+                <p>Supervisor: {selectedTeacher.Supervisor || 'N/A'}</p>
               </div>
               <div className="teacher-personal">
                 <h4>Personal Information</h4>
-                <p>Pronouns: She/Her</p>
-                <p>Birthday: January 1</p>
-                <p>City: City Name</p>
+                <p>Pronouns: {selectedTeacher.Pronouns || 'N/A'}</p>
+                <p>Birthday: {selectedTeacher.Birthday || 'N/A'}</p>
+                <p>City: {selectedTeacher.City || 'N/A'}</p>
               </div>
             </div>
           ) : (
