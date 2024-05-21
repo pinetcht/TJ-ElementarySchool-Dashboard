@@ -7,13 +7,13 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
 import { db } from "../../firebase";
-import { addDoc, getDocs, doc, collection } from "firebase/firestore";
+import { addDoc, getDocs, getDoc, doc, collection } from "firebase/firestore";
 
 const Classes = () => {
   const [students, setStudents] = useState(null);
-
-
+  const [thisClass, setClass] = useState(null);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -28,10 +28,10 @@ const Classes = () => {
 
           setStudents(allStudents);
         } else {
-          console.log("No such document!");
+          console.log("No student document!");
         }
       } catch (error) {
-        console.error("Cannot load answer", error);
+        console.error("Cannot load students", error);
       }
     };
 
@@ -39,60 +39,82 @@ const Classes = () => {
   }, []);
 
   useEffect(() => {
-    console.log(students)
-    console.log(students[1].enrolledIn)
-  },[students])
+    const fetchClasses = async () => {
+      try {
+        const querySnapshot = await getDoc(
+          doc(db, "Classes", "1lJfsnl3Ah0QjgwBNZpA")
+        );
+        if (querySnapshot != null) {
+          const fetchedClass = querySnapshot.data();
 
+          setClass(fetchedClass);
+        } else {
+          console.log("No class document!");
+        }
+      } catch (error) {
+        console.error("Cannot load classes", error);
+      }
+    };
 
-  let TableHeader = null;
-  if (students) {
-    TableHeader = (
-      <>
-        <TableCell>Student First Name</TableCell>
-        <TableCell align="right">Student Last Name</TableCell>
-        <TableCell align="right">Grade</TableCell>
-      </>
-    );
-  }
+    fetchClasses();
+  }, []);
+
+  // useEffect(() => {
+  //   console.log(students);
+  //   // console.log(students[1].enrolledIn);
+  // }, [students]);
+
+  // useEffect(() => {
+  //   console.log(thisClass);
+  //   console.log(thisClass.Start_time);
+  // }, [thisClass]);
 
   return (
     <>
-      <h1>Science Class</h1>
-      <div>
-        <h2>General Info</h2>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur at
-          leo lacus. Duis ac feugiat nunc. Morbi eleifend nulla quis est
-          lobortis posuere. Fusce molestie et est eu vestibulum. Aenean ipsum
-          lorem, sollicitudin ut feugiat a, congue a nisi. Suspendisse lobortis
-          rhoncus velit at hendrerit. Quisque aliquet eu arcu et ullamcorper.
-        </p>
-      </div>
+      {thisClass && (
+        <>
+          <h1>{thisClass.Name} Class</h1>
+          <div>
+            <h2>General Info</h2>
+            <p>Welcome students!</p>
+            <p>
+              <b>Start Time:</b> {thisClass.Start_time}
+            </p>
+            <p>
+              <b>End Time:</b> {thisClass.End_time}
+            </p>
+          </div>
+        </>
+      )}
 
       <div>
         <h2>Roster</h2>
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                { TableHeader }
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {students.map((row) => (
-                <TableRow
-                  key={row.id}
-                >
-                  <TableCell component="th" scope="row">
-                    {row.First}
-                  </TableCell>
-                  <TableCell align="right">{row.Last}</TableCell>
-                  <TableCell align="right">{row.Grade}</TableCell>
+
+        {students && (
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Student First Name</TableCell>
+                  <TableCell align="right">Student Last Name</TableCell>
+                  <TableCell align="right">Grade</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                { students && students.map((row) => (
+                  <TableRow key={row.id}>
+                    <TableCell component="th" scope="row">
+                      {row.First}
+                    </TableCell>
+                    <TableCell align="right">{row.Last}</TableCell>
+                    <TableCell align="right">{row.Grade}</TableCell>
+                    <TableCell align="right"><Button variant="outlined">Edit Grade</Button></TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </div>
     </>
   );
