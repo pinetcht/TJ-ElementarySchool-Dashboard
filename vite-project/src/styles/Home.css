@@ -17,9 +17,10 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #1976d251;
+    background: linear-gradient(90deg, rgba(25, 118, 210, 0.5) 30%, rgba(255, 255, 255, 0.3) 100%);
     z-index: 1;
-  }
+}
+
   
 #homePageCardHeader{
     margin-bottom: 2vh;
@@ -60,7 +61,8 @@
     font-size: 6em; 
     text-align: center; 
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-
+    animation: fadeIn 1s ease-in-out;
+    font-family: 'Lato', sans-serif;
   }
 
   .homePageHr{
@@ -78,4 +80,17 @@
       height: 20vh; 
 
     }
+}
+
+#animatedCount{
+  margin-bottom: 2vh;
+}
+
+@keyframes fadeIn {
+  0% { opacity: .4; }
+  100% { opacity: 1; }
+}
+
+.spanHome{
+  animation: fadeIn 2s ease-in-out;
 }
