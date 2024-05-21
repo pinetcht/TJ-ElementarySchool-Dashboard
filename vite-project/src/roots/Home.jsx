@@ -33,7 +33,7 @@ const Home = () => {
   return (
     <div>
       <div className="image-container">
-        <img src="/public/homePageSchool.jpeg" alt="School Image" className="full-width-image"></img>
+        <img src="/homePageSchool.jpeg" alt="School Image" className="full-width-image"></img>
         <div className="overlay"></div>
         <h1 className="homeScreenHeader">Welcome</h1>
     </div>
