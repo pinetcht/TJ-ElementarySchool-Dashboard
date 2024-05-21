@@ -94,3 +94,7 @@
 .spanHome{
   animation: fadeIn 2s ease-in-out;
 }
+
+.nothing{
+  color: #f5f2f2; 
+}
