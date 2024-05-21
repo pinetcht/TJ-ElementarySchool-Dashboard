@@ -11,28 +11,22 @@ import { db } from "../../firebase";
 import { addDoc, getDocs, doc, collection } from "firebase/firestore";
 
 const Classes = () => {
+  const [students, setStudents] = useState(null);
 
-  const [students, setStudents] = useState(null)
 
-  function createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein };
-  }
-  const rows = [
-    createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-    createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-    createData("Eclair", 262, 16.0, 24, 6.0),
-    createData("Cupcake", 305, 3.7, 67, 4.3),
-    createData("Gingerbread", 356, 16.0, 49, 3.9),
-  ];
 
   useEffect(() => {
-    const fetchDoc = async () => {
+    const fetchStudents = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "Students"));
         if (querySnapshot != null) {
-          const allStudents = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          setStudents(allStudents)
+          const allStudents = querySnapshot.docs.map((doc, key) => ({
+            id: doc.id,
+            key,
+            ...doc.data(),
+          }));
 
+          setStudents(allStudents);
         } else {
           console.log("No such document!");
         }
@@ -41,12 +35,25 @@ const Classes = () => {
       }
     };
 
-    fetchDoc();
+    fetchStudents();
   }, []);
 
   useEffect(() => {
     console.log(students)
-  }, [students])
+    console.log(students[1].enrolledIn)
+  },[students])
+
+
+  let TableHeader = null;
+  if (students) {
+    TableHeader = (
+      <>
+        <TableCell>Student First Name</TableCell>
+        <TableCell align="right">Student Last Name</TableCell>
+        <TableCell align="right">Grade</TableCell>
+      </>
+    );
+  }
 
   return (
     <>
@@ -62,33 +69,25 @@ const Classes = () => {
         </p>
       </div>
 
-
       <div>
         <h2>Roster</h2>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>Dessert (100g serving)</TableCell>
-                <TableCell align="right">Calories</TableCell>
-                <TableCell align="right">Fat&nbsp;(g)</TableCell>
-                <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-                <TableCell align="right">Protein&nbsp;(g)</TableCell>
+                { TableHeader }
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
+              {students.map((row) => (
                 <TableRow
-                  key={row.name}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  key={row.id}
                 >
                   <TableCell component="th" scope="row">
-                    {row.name}
+                    {row.First}
                   </TableCell>
-                  <TableCell align="right">{row.calories}</TableCell>
-                  <TableCell align="right">{row.fat}</TableCell>
-                  <TableCell align="right">{row.carbs}</TableCell>
-                  <TableCell align="right">{row.protein}</TableCell>
+                  <TableCell align="right">{row.Last}</TableCell>
+                  <TableCell align="right">{row.Grade}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
