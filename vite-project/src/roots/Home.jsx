@@ -79,10 +79,10 @@ useEffect(() => {
     <Card id = "homePageCard">
           <CardContent id ="homePageCardContent">
             <Typography variant="h4" component="div" id = "homePageCardHeader">
-              Explore Classes <ClassIcon></ClassIcon>
+              View Classes <ClassIcon></ClassIcon>
             </Typography>
             <Typography variant="body1" color="text.secondary" id = "homePageCardDesc">
-              View information on <span className = "spanHome" style={{ fontWeight: 'bold' }}>{numberClasses}</span> classes offered
+              View and edit information on <span className = "spanHome" style={{ fontWeight: 'bold' }}>{numberClasses}</span> classes offered
             </Typography>
             <Button variant = "contained" color = "primary" id = "homePageCardBtn" onClick = {handleClasses}>View Classes</Button>
           </CardContent>
@@ -95,7 +95,7 @@ useEffect(() => {
               View Events Calendar <CalendarMonthIcon></CalendarMonthIcon>
             </Typography>
             <Typography variant="body1" color="text.secondary" id = "homePageCardDesc">
-              See a calendar showcasing <span className = "spanHome" style={{ fontWeight: 'bold' }}>{numberEvents}</span> upcoming events
+              See <span className = "spanHome" style={{ fontWeight: 'bold' }}>{numberEvents}</span> upcoming events and add new ones
             </Typography>
             <Button variant = "contained" color = "primary" id = "homePageCardBtn" onClick = {handleCalendar}>View Calendar</Button>
 
