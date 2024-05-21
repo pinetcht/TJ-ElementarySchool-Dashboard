@@ -30,12 +30,9 @@ const Classes = () => {
       try {
         const querySnapshot = await getDocs(collection(db, "Students"));
         if (querySnapshot != null) {
-          const student = []
-          const allStudents = querySnapshot.docs.map(doc => student.push({ id: doc.id, ...doc.data() }));
-          
+          const allStudents = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
           setStudents(allStudents)
 
-          console.log(allStudents)
         } else {
           console.log("No such document!");
         }
@@ -46,6 +43,10 @@ const Classes = () => {
 
     fetchDoc();
   }, []);
+
+  useEffect(() => {
+    console.log(students)
+  }, [students])
 
   return (
     <>
