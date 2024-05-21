@@ -48,7 +48,7 @@
 }
 
 #homePageCardBtn{
-    width: 40%;
+    width: 45%;
 }
 
 .homeScreenHeader {
@@ -78,7 +78,16 @@
     }
     .image-container {
       height: 20vh; 
-
+    }
+    #homePageCardHeader{
+      font-size: 1.4em;
+    }
+    #homePageCardDesc{
+      font-size: .8em;
+    }
+    #homePageCardBtn{
+      font-size: .8em;
+      width: 70%;
     }
 }
 
