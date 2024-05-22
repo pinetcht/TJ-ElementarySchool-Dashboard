@@ -5,6 +5,7 @@ import {
   CardMedia,
   Typography,
   Button,
+  Grid,
 } from "@mui/material";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import { db } from "../../firebase";
@@ -168,15 +169,12 @@ const Students = () => {
   return (
     <div>
       <div className="image-container">
-        <img
-          src="/homePageSchool.jpeg"
-          alt="School Image"
-          className="full-width-image"
-        ></img>
+        <img src="/homePageSchool.jpeg" alt="School Image" className="full-width-image"></img>
         <div className="overlay"></div>
-        <h1 className="studentScreenHeader">Student Directory</h1>
-      </div>
-      <div className="main-wrapper">
+        <h1 className="homeScreenHeader">Student Directory</h1>
+    </div>
+    <hr className = "homePageHr"></hr>
+      <Card className="main-wrapper">
         <div className="left-container">
           <h1> All Students</h1>
           <p> Browse through the list of all Students</p>
@@ -278,7 +276,7 @@ const Students = () => {
 
             <div className="student-profile-desc">
               {/* Display student card*/}
-              <Card sx={{ maxWidth: 500 }}>
+              <Card className = "studentCard" sx={{ maxWidth: 500 }}>
                 <CardMedia
                   component="img"
                   height="200"
@@ -345,7 +343,7 @@ const Students = () => {
         ) : (
           <p>Select a student to see more details</p>
         )}
-      </div>
+      </Card>
     </div>
   );
 };
