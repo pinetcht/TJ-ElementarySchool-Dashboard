@@ -10,7 +10,6 @@ import SchoolIcon from '@mui/icons-material/School';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import Class from '@mui/icons-material/Class';
 
-
 import { db } from "../../firebase";
 import { addDoc, collection, getDocs, doc } from "firebase/firestore";
 
