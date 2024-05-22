@@ -45,7 +45,7 @@
 }
 
 .left-container {
-  margin-left: 2em;
+  margin-left: 2px;
   flex: 1; 
   border-right: 1px solid black; 
 }
@@ -69,4 +69,27 @@
   box-sizing: border-box; 
   outline: none; 
 
+}
+
+/* Styling for the entire table */
+.student-list {
+  width: 100%; 
+  border-collapse: collapse;
+  background-color: none;
+}
+
+/* Styling for table header row */
+.student-header th {
+  padding: 10px;
+}
+
+/* Styling for table body rows */
+.student-row td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  
+}
+
+.student-photo{
+  align-items: center;
 }
