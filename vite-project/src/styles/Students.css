@@ -38,6 +38,11 @@
 .main-wrapper {
   display: flex;
   margin-top: 1rem;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); 
+    margin-top: 2vh;
+    margin-left: 2vh;
+    margin-right: 2vh;
+    padding-bottom: 10vh;
 }
 
 .left-container, .right-container {
@@ -45,9 +50,8 @@
 }
 
 .left-container {
-  margin-left: 2em;
+  margin-left: 2px;
   flex: 1; 
-  border-right: 1px solid black; 
 }
 
 .right-container {
@@ -56,6 +60,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   flex: 0 0 35%; 
   row-gap: 50px;
+  border: 1px solid black; 
 }
 
 .student-specifics h2 {
@@ -63,10 +68,72 @@
   margin-bottom: 10px; 
 }
 
-.search input {
-  padding: 8px; 
-  width: calc(100% - 20px); 
-  box-sizing: border-box; 
-  outline: none; 
+.search {
+  display: flex;
+  align-items: center;
+  width: 300px; 
+}
 
+
+.search input {
+  padding: 8px;
+  width: 180px; 
+  box-sizing: border-box;
+  outline: none;
+  margin-right: 10px;
+  flex: 1;
+  margin-right: 10px;
+}
+
+/* Styling for the entire table */
+.student-list {
+  width: 100%; 
+  border-collapse: collapse;
+  background-color: none;
+}
+
+/* Styling for table header row */
+.student-header th {
+  padding: 10px;
+}
+
+.student-row :hover{
+  cursor: pointer;
+  color: blue;
+  font-weight: bold;
+}
+
+/* Styling for table body rows */
+.student-row td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  
+  
+}
+
+.student-photo {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+}
+
+.addStudent-option {
+  display: flex; 
+  flex-direction: column;
+  justify-content: space-around;
+  padding-top: 20px;
+
+}
+
+.addStudent-option figcaption {
+  margin-right: 10px; }
+
+.update-buttons{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.studentCard{
+  z-index: 2000;
 }
