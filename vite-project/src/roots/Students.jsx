@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@mui/material";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import { db } from "../../firebase";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import { collection, getDocs, addDoc, deleteDoc } from "firebase/firestore";
 import "../styles/Students.css";
 
 const Students = () => {
@@ -75,6 +75,17 @@ const Students = () => {
     }
   };
 
+  // TODO: Handlers for the update/delete of students
+  const handleDelete = async () => {
+    if (selectedStudent) {
+    }
+  };
+
+  const handleEdit = async () => {
+    if (selectedStudent) {
+    }
+  };
+
   useEffect(() => {
     fetchStudents();
   }, []);
@@ -106,7 +117,7 @@ const Students = () => {
             <figcaption onClick={handleAddOption}>
               Can't find your student? {isAddingStudent ? "▲" : "▼"}
             </figcaption>
-            <br/>
+            <br />
             <Button type="submit">Add Student</Button>
             {isAddingStudent && (
               <form onSubmit={handleSubmit}>
@@ -214,6 +225,23 @@ const Students = () => {
               <div className="update-student">
                 <h2> Edit/Update Student</h2>
                 {/* TODO: Must provide an option where we can remove/edit/update the student through a button */}
+                <div className="update-buttons">
+                  <Button
+                    onClick={handleDelete}
+                    variant="contained"
+                    color="secondary"
+                  >
+                    Remove Student
+                  </Button>
+                  <br />
+                  <Button
+                    onClick={handleEdit}
+                    variant="contained"
+                    color="primary"
+                  >
+                    Edit Information
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

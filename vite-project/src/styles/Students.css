@@ -114,3 +114,9 @@
 
 .addStudent-option figcaption {
   margin-right: 10px; }
+
+.update-buttons{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
