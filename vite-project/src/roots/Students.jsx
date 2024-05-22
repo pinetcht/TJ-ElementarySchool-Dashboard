@@ -93,7 +93,7 @@ const Students = () => {
                   <td className="student-name">{`${student.first} ${student.last}`}</td>
                   <td className="student-grade">{`${student.grade}`}</td>
                   <td className="student-teacher">{`Teacher: ${student.teacher}`}</td>
-                </tr>
+                </tr> 
               ))}
             </tbody>
           </table>
