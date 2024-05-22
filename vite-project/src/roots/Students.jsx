@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import { db } from "../../firebase";
-import { collection, getDocs, addDoc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs, addDoc, deleteDoc, getDoc } from "firebase/firestore";
 import "../styles/Students.css";
 
 const Students = () => {
@@ -30,12 +30,39 @@ const Students = () => {
       const studentsList = [];
       grabInformation.forEach((doc) => {
         const data = doc.data();
+
+        let enrolledInList = []
+        //Check is student is enrolled in any classes
+        if (data.enrolledIn && data.enrolledIn.length > 0) {
+          //loop throughe each class
+          data.enrolledIn.forEach(async (classRef) => {
+            try {
+              //Try getting the entry associated with the class ID at this spot in array
+              const classDoc = await getDoc(classRef);
+              if (classDoc.exists) {
+                //If it exist extract the name
+                const classData = classDoc.data();
+                //Store the name of the class
+                enrolledInList.push(classData.Name); 
+              } else {
+                console.log("Class document not found");
+              }
+            } catch (error) {
+              console.error("Error fetching class data:", error);
+            }
+          });
+        } else {
+          console.log('N/A');
+        }
+
+
+
         studentsList.push({
           id: doc.id,
           First: data.First,
           Last: data.Last,
           Grade: data.Grade,
-          enrolledIn: data.enrolledIn,
+          enrolledIn: enrolledInList,
           Teacher: data.Teacher,
         });
       });
