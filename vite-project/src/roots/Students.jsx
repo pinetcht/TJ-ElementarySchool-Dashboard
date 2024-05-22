@@ -6,7 +6,11 @@ import {
   Typography,
   Button,
   Grid,
+  RadioGroup, Radio, Select, MenuItem, FormControl, TextField, FormLabel, FormControlLabel, Checkbox
 } from "@mui/material";
+
+
+
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import { db } from "../../firebase";
 import {
@@ -16,6 +20,8 @@ import {
   deleteDoc,
   doc,
   getDoc, 
+  query,
+  where,
 } from "firebase/firestore";
 
 import "../styles/Students.css";
@@ -29,57 +35,82 @@ const Students = () => {
   // When adding a new student:
   const [First, setFirst] = useState("");
   const [Last, setLast] = useState("");
-  const [Grade, setGrade] = useState(0);
+  const [Grade, setGrade] = useState("");
   const [Teacher, setTeacher] = useState("");
-  const [enrolledIn, setEnrolledIn] = useState(""); // assuming it's a string for now
+  //const [enrolledIn, setEnrolledIn] = useState(""); // assuming it's a string for now
+
+  const [teachers, setTeachers] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [enrolledIn, setEnrolledIn] = useState([]);
+  const [selectedTeacherName, setSelectedTeacherName] = useState("");
+
+
+
+
 
   const fetchStudents = async () => {
     try {
+      //Get all student records 
       const grabInformation = await getDocs(collection(db, "Students"));
       const studentsList = [];
-      grabInformation.forEach((doc) => {
+  
+      // From internet, user to handle nested async awaits 
+      for (const doc of grabInformation.docs) {
         const data = doc.data();
-
-        let enrolledInList = []
-        //Check is student is enrolled in any classes
+        let enrolledInList = [];
+  
+        // Check if student is enrolled in any classes
         if (data.enrolledIn && data.enrolledIn.length > 0) {
-          //loop throughe each class
-          data.enrolledIn.forEach(async (classRef) => {
+          // Loop through each class and fetch class names
+          for (const classRef of data.enrolledIn) {
             try {
-              //Try getting the entry associated with the class ID at this spot in array
+              //Get the data for each class the student is enrolled in
               const classDoc = await getDoc(classRef);
               if (classDoc.exists) {
-                //If it exist extract the name
                 const classData = classDoc.data();
-                //Store the name of the class
-                enrolledInList.push(classData.Name); 
+                enrolledInList.push(classData.Name);
               } else {
                 console.log("Class document not found");
               }
             } catch (error) {
               console.error("Error fetching class data:", error);
             }
-          });
+          }
         } else {
           console.log('N/A');
         }
-
-
-
+  
+        // Fetch teacher name
+        let teacherName = "N/A";
+        if (data.Teacher) {
+          try {
+            const teacherDoc = await getDoc(data.Teacher);
+            if (teacherDoc.exists) {
+              const teacherData = teacherDoc.data();
+              teacherName = `${teacherData.First} ${teacherData.Last}`;
+            }
+          } catch (error) {
+            console.error("Error fetching teacher data:", error);
+          }
+        }
+  
         studentsList.push({
           id: doc.id,
           First: data.First,
           Last: data.Last,
           Grade: data.Grade,
           enrolledIn: enrolledInList,
-          Teacher: data.Teacher,
+          Teacher: teacherName,
         });
-      });
+      }
+  
       setStudents(studentsList);
+      console.log(studentsList);
     } catch (error) {
       console.error("Error fetching student data: ", error);
     }
   };
+  
 
   const handleSearch = () => {
     if (searchQuery.trim() === "") {
@@ -102,40 +133,134 @@ const Students = () => {
     }
   };
 
-  const handleStudentClick = (student) => {
-    // Handle whether user wants to learn more about specific student
+  const handleStudentClick = async (student) => {
     setSelectedStudent(student);
   };
+
 
   const handleAddOption = () => {
     // Handle whether user wants to add a new student
     setIsAddingStudent((prevState) => !prevState);
   };
 
+
+
+
+
+
+
+
+  const getTeacherIdByName = async (firstName, lastName) => {
+    try {
+      // Query Firestore to get the teacher's ID
+      const q = query(collection(db, "teachers"), where("First", "==", firstName), where("Last", "==", lastName));
+      const querySnapshot = await getDocs(q);
+  
+      if (querySnapshot.empty) {
+        console.error("Selected teacher not found");
+        return null;
+      }
+  
+      let selectedTeacherId = null;
+      querySnapshot.forEach((doc) => {
+        selectedTeacherId = doc.id;
+      });
+  
+      return selectedTeacherId;
+    } catch (error) {
+      console.error("Error fetching teacher ID: ", error);
+      return null;
+    }
+  };
+
+  const getClassRefByName = async (className) => {
+    try {
+      const q = query(collection(db, "Classes"), where("Name", "==", className));
+      const querySnapshot = await getDocs(q);
+  
+      if (querySnapshot.empty) {
+        console.error(`Class with name ${className} not found`);
+        return null;
+      }
+  
+      let classRef = null;
+      querySnapshot.forEach((doc) => {
+        classRef = doc.ref;
+      });
+  
+      return classRef;
+    } catch (error) {
+      console.error("Error fetching class reference: ", error);
+      return null;
+    }
+  };
+  
+  const fetchTeacherName = async (teacherRef) => {
+    try {
+      const teacherDoc = await getDoc(teacherRef);
+      console.log(teacherDoc); 
+      if (teacherDoc.exists()) {
+        const teacherData = teacherDoc.data();
+        return `${teacherData.First} ${teacherData.Last}`;
+      } else {
+        //console.error("Teacher document not found");
+        return "N/A";
+      }
+    } catch (error) {
+      console.error("Error fetching teacher data:", error);
+      return "N/A";
+    }
+  };
+  
+
+
+
+
+
+
+
+
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Do not allow information to pass if user has not answered the entire form
-    if (!First || !Last || Grade === 0 || !Teacher || !enrolledIn) {
+    if (!First || !Last || !Grade || !Teacher || !enrolledIn) {
       alert("Please fill in all fields");
       return;
     }
 
+    let teacher_id = await getTeacherIdByName(Teacher.First, Teacher.Last);
+    const teacherRef = doc(db, "teachers", teacher_id);
+    //console.log(enrolledIn); 
+
+    const enrolledInRefs = await Promise.all(
+      enrolledIn.map(async (className) => await getClassRefByName(className))
+    );
+    
+    
+    const newStudent = {
+      First,
+      Last,
+      Grade,
+      Teacher: teacherRef,
+      enrolledIn: enrolledInRefs,
+    };
+  
+    // Log the newStudent object before adding it to Firestore
+    console.log("Submitting new student: ", newStudent);
+    
     try {
-      const docRef = await addDoc(collection(db, "Students"), {
-        First,
-        Last,
-        Grade,
-        Teacher,
-        enrolledIn,
-      });
+      const docRef = await addDoc(collection(db, "Students"), newStudent);
       console.log("Document written with ID: ", docRef.id);
       fetchStudents();
+      
 
       // Clear form fields after submission for better user experience
       setFirst("");
       setLast("");
-      setGrade(0);
+      setGrade("");
       setTeacher("");
       setEnrolledIn("");
     } catch (error) {
@@ -166,6 +291,79 @@ const Students = () => {
     fetchStudents();
   }, []);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //
+
+  const handleCheckboxChange = (event) => {
+    //From internet 
+    const value = event.target.value;
+    setEnrolledIn((prev) => {
+      if (prev.includes(value)) {
+        return prev.filter((className) => className !== value);
+      } else {
+        return [...prev, value];
+      }
+    });
+    
+  };
+
+  useEffect(() => {
+    const fetchTeachers = async () => {
+      try {
+        const grabInformation = await getDocs(collection(db, "teachers"));
+        const teachersList = [];
+        grabInformation.forEach((doc) => {
+          const data = doc.data();
+          teachersList.push(data);
+        });
+        setTeachers(teachersList);
+      } catch (error) {
+        console.error("Error fetching teachers:", error);
+      }
+    };
+
+    fetchTeachers();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        const grabInformation = await getDocs(collection(db, "Classes"));
+        const classesList = [];
+        grabInformation.forEach((doc) => {
+          const data = doc.data();
+          classesList.push(data);
+        });
+        setClasses(classesList);
+      } catch (error) {
+        console.error("Error fetching classes:", error);
+      }
+    };
+
+    fetchClasses();
+  }, []);
+
+
+
+
+
+
+
+  //
   return (
     <div>
       <div className="image-container">
@@ -192,51 +390,75 @@ const Students = () => {
 
           {/* Provide an option where we can add students */}
           <div className="addStudent-option">
-            <figcaption onClick={handleAddOption}>
-              Can't find your student? {isAddingStudent ? "▲" : "▼"}
-            </figcaption>
-            <br />
-            {isAddingStudent && (
-              <form onSubmit={handleSubmit}>
-                <label>First Name: </label>
-                <input
-                  type="text"
-                  value={First}
-                  onChange={(e) => setFirst(e.target.value)}
-                ></input>
-                <br />
-                <label>Last Name: </label>
-                <input
-                  type="text"
-                  value={Last}
-                  onChange={(e) => setLast(e.target.value)}
-                ></input>
-                <br />
-                <label>Grade: </label>
-                <input
-                  type="number"
-                  value={Grade}
-                  onChange={(e) => setGrade(parseInt(e.target.value))}
-                ></input>
-                <br />
-                <label>Teacher: </label>
-                <input
-                  type="text"
-                  value={Teacher}
-                  onChange={(e) => setTeacher(e.target.value)}
-                ></input>
-                <br />
-                <label>Enrolled In: </label>
-                <input
-                  type="text"
-                  value={enrolledIn}
-                  onChange={(e) => setEnrolledIn(e.target.value)}
-                ></input>
-                <br />
-                <Button type="submit">Add Student</Button>
-              </form>
-            )}
-          </div>
+      <figcaption onClick={handleAddOption}>
+        Can't find your student? {isAddingStudent ? "▲" : "▼"}
+      </figcaption>
+      <br />
+      {isAddingStudent && (
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="First Name"
+            value={First}
+            onChange={(e) => setFirst(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Last Name"
+            value={Last}
+            onChange={(e) => setLast(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <FormControl fullWidth margin="normal">
+            <FormLabel>Grade</FormLabel>
+            <Select
+              value={Grade}
+              onChange={(e) => setGrade(e.target.value)}
+            >
+              <MenuItem value="">Select a grade</MenuItem>
+              <MenuItem value="Kindergarten">Kindergarten</MenuItem>
+              <MenuItem value="1st">1st</MenuItem>
+              <MenuItem value="2nd">2nd</MenuItem>
+              <MenuItem value="3rd">3rd</MenuItem>
+              <MenuItem value="4th">4th</MenuItem>
+              <MenuItem value="5th">5th</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl fullWidth margin="normal">
+            <FormLabel>Teacher</FormLabel>
+            <Select
+              value={Teacher}
+              onChange={(e) => setTeacher(e.target.value)}
+            >
+              <MenuItem value="">Select a teacher</MenuItem>
+              {teachers.map((teacher, index) => (
+                <MenuItem key={index} value={teacher}>
+                  {teacher.First} {teacher.Last}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl component="fieldset" fullWidth margin="normal">
+            <FormLabel component="legend">Enrolled In</FormLabel>
+            {classes.map((curClass, index) => (
+              <FormControlLabel
+                key={index}
+                control={
+                  <Checkbox
+                    checked={enrolledIn.includes(curClass.Name)}
+                    onChange={handleCheckboxChange}
+                    value={curClass.Name}
+                  />
+                }
+                label={curClass.Name}
+              />
+            ))}
+          </FormControl>
+          <Button type="submit" variant="contained" color="primary">Add Student</Button>
+        </form>
+      )}
+    </div>
 
           {/* Setting up how we would display student information through gridding */}
           <table className="student-list">
@@ -300,7 +522,7 @@ const Students = () => {
                 <h2>Academic Information </h2>
                 <p> Enrolled In: {selectedStudent.enrolledIn ? selectedStudent.enrolledIn.join(', ') : "N/A"}</p>
                 <p> Average Grade: {selectedStudent.Grade || "N/A"}</p>
-                <p> Teacher Supervisor: {selectedStudent.Teacher || "N/A"} </p>
+                <p>Teacher: {selectedStudent.Teacher || "N/A"}</p>
               </div>
               <div className="contact-info">
                 <h2> Contact Information </h2>
