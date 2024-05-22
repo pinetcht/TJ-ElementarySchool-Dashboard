@@ -55,7 +55,7 @@ const Teachers = () => {
           className="full-width-image"
         />
         <div className="overlay"></div>
-        <h1 className="teacherScreenHeader">Faculty & Staff Directory</h1>
+        <h1 className="teacherScreenHeader">Teacher Directory</h1>
       </div>
       <div className="main-wrapper">
         <div className="left-panel">
