@@ -63,11 +63,15 @@
   margin-bottom: 10px; 
 }
 
+
 .search input {
-  padding: 8px; 
-  width: calc(100% - 20px); 
-  box-sizing: border-box; 
-  outline: none; 
+  padding: 8px;
+  width: calc(100% - 180px); 
+  box-sizing: border-box;
+  outline: none;
+  margin-right: 10px;
+  flex: 1;
+  margin-right: 10px;
 }
 
 /* Styling for the entire table */
@@ -93,8 +97,20 @@
   padding: 10px;
   border: 1px solid #ccc;
   
+  
 }
 
-.student-photo{
+.student-photo {
+  display: flex;
+  justify-content: center; 
   align-items: center;
 }
+
+.addStudent-option,
+.search {
+  display: flex; 
+  align-items: center;
+}
+
+.addStudent-option figcaption {
+  margin-right: 10px; }
