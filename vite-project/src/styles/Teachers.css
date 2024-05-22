@@ -1,0 +1,118 @@
+.teacher-directory {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f0f0f0;
+  }
+  
+  .header {
+    text-align: center;
+    background-image: url('/homePageSchool.jpeg');
+    background-size: cover;
+    color: white;
+    padding: 50px 20px;
+    border-radius: 8px;
+  }
+  
+  .header h1, .header h2 {
+    margin: 0;
+  }
+  
+  .content {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    margin-top: 20px;
+  }
+  
+  .left-panel, .right-panel {
+    flex: 1;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    margin: 10px;
+  }
+  
+  .left-panel {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .search-input {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  button {
+    padding: 10px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  .teacher-list {
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .teacher-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+  }
+  
+  .teacher-item:last-child {
+    border-bottom: none;
+  }
+  
+  .teacher-avatar, .teacher-avatar-large {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #ddd;
+    margin-right: 10px;
+  }
+  
+  .teacher-avatar-large {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+  }
+  
+  .teacher-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .teacher-name {
+    font-weight: bold;
+  }
+  
+  .teacher-detail h3 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .teacher-contact, .teacher-work, .teacher-personal {
+    margin-top: 20px;
+  }
+  
+  .teacher-contact h4, .teacher-work h4, .teacher-personal h4 {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+  }
+  

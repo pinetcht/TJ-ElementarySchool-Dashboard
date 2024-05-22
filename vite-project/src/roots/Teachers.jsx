@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase';
+import React, { useState, useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebase";
+import "../styles/Teachers.css";
 
 const Teachers = () => {
+  const [allTeachers, setAllTeachers] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTeacher, setSelectedTeacher] = useState(null);
@@ -14,6 +16,7 @@ const Teachers = () => {
         id: doc.id,
         ...doc.data(),
       }));
+      setAllTeachers(teachersList);
       setTeachers(teachersList);
     } catch (error) {
       console.error("Error fetching teacher data: ", error);
@@ -24,12 +27,19 @@ const Teachers = () => {
     fetchTeachers();
   }, []);
 
-  const handleSearch = () => {
-    const filteredTeachers = teachers.filter(teacher =>
-      teacher.First.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      teacher.Last.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setTeachers(filteredTeachers);
+  const handleSearch = (e) => {
+    const searchValue = e.target.value;
+    setSearchTerm(searchValue);
+
+    if (searchValue === '') {
+      setTeachers(allTeachers);
+    } else {
+      const filteredTeachers = allTeachers.filter(teacher =>
+        teacher.First.toLowerCase().includes(searchValue.toLowerCase()) ||
+        teacher.Last.toLowerCase().includes(searchValue.toLowerCase())
+      );
+      setTeachers(filteredTeachers);
+    }
   };
 
   const handleTeacherClick = (teacher) => {
@@ -37,22 +47,30 @@ const Teachers = () => {
   };
 
   return (
-    <div className="teacher-directory">
-      <header className="header">
-        <h1>TJ Elementary Dashboard</h1>
-        <h2>Faculty & Staff Directory</h2>
-      </header>
-      <div className="content">
+    <div>
+      <div className="image-container">
+        <img
+          src="/homePageSchool.jpeg"
+          alt="School Image"
+          className="full-width-image"
+        />
+        <div className="overlay"></div>
+        <h1 className="teacherScreenHeader">Faculty & Staff Directory</h1>
+      </div>
+      <div className="main-wrapper">
         <div className="left-panel">
-          <h3>All Teachers</h3>
-          <input
-            type="text"
-            placeholder="Search"
-            className="search-input"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <button onClick={handleSearch}>Search</button>
+          <h1>All Teachers</h1>
+          <p>Browse through the list of all teachers</p>
+
+          <div className="search">
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={handleSearch}
+            />
+          </div>
+
           <div className="teacher-list">
             {teachers.map((teacher) => (
               <div className="teacher-item" key={teacher.id} onClick={() => handleTeacherClick(teacher)}>
@@ -66,6 +84,7 @@ const Teachers = () => {
             ))}
           </div>
         </div>
+
         <div className="right-panel">
           {selectedTeacher ? (
             <div className="teacher-detail">
