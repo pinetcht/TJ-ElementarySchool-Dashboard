@@ -8,7 +8,15 @@ import {
 } from "@mui/material";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import { db } from "../../firebase";
-import { collection, getDocs, addDoc, deleteDoc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  doc,
+  getDoc, 
+} from "firebase/firestore";
+
 import "../styles/Students.css";
 
 const Students = () => {
@@ -134,9 +142,17 @@ const Students = () => {
     }
   };
 
-  // TODO: Handlers for the update/delete of students
+  // TODO: Handlers for the deletion of student from the list, reversing the way we worked with handleSubmit
   const handleDelete = async () => {
     if (selectedStudent) {
+      try {
+        const studentRef = doc(db, "Students", selectedStudent.id);
+        await deleteDoc(studentRef);
+        console.log("Document successfully deleted!");
+        fetchStudents();
+      } catch (error) {
+        console.error("Error deleting document: ", error);
+      }
     }
   };
 
