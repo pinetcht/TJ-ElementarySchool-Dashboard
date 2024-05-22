@@ -63,10 +63,16 @@
   margin-bottom: 10px; 
 }
 
+.search {
+  display: flex;
+  align-items: center;
+  width: 300px; 
+}
+
 
 .search input {
   padding: 8px;
-  width: calc(100% - 180px); 
+  width: 180px; 
   box-sizing: border-box;
   outline: none;
   margin-right: 10px;
@@ -106,10 +112,12 @@
   align-items: center;
 }
 
-.addStudent-option,
-.search {
+.addStudent-option {
   display: flex; 
-  align-items: center;
+  flex-direction: column;
+  justify-content: space-around;
+  padding-top: 20px;
+
 }
 
 .addStudent-option figcaption {

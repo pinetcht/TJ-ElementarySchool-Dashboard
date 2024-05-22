@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Button,
+} from "@mui/material";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import { db } from "../../firebase";
 import { collection, getDocs, addDoc, deleteDoc } from "firebase/firestore";
@@ -72,6 +78,13 @@ const Students = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Do not allow information to pass if user has not answered the entire form
+    if (!First || !Last || Grade === 0 || !Teacher || !enrolledIn) {
+      alert("Please fill in all fields");
+      return;
+    }
+
     try {
       const docRef = await addDoc(collection(db, "Students"), {
         First,
@@ -131,10 +144,10 @@ const Students = () => {
               placeholder="Filter by name"
               onChange={(e) => setSearchQuery(e.target.value)}
             />
+            <Button onClick={handleSearch} variant="contained">
+              Search
+            </Button>
           </div>
-          <Button onClick={handleSearch} variant="contained">
-            Search
-          </Button>
 
           {/* Provide an option where we can add students */}
           <div className="addStudent-option">
@@ -142,7 +155,6 @@ const Students = () => {
               Can't find your student? {isAddingStudent ? "▲" : "▼"}
             </figcaption>
             <br />
-            <Button type="submit">Add Student</Button>
             {isAddingStudent && (
               <form onSubmit={handleSubmit}>
                 <label>First Name: </label>
@@ -180,6 +192,7 @@ const Students = () => {
                   onChange={(e) => setEnrolledIn(e.target.value)}
                 ></input>
                 <br />
+                <Button type="submit">Add Student</Button>
               </form>
             )}
           </div>
@@ -219,9 +232,26 @@ const Students = () => {
         {selectedStudent ? (
           <div className="right-container">
             <h1> Student Information </h1>
-            <h3>
-              {selectedStudent.First} {selectedStudent.Last}
-            </h3>
+
+            <div className="student-profile-desc">
+              {/* Display student card*/}
+              <Card sx={{ maxWidth: 500 }}>
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image="/assets/profile-picture.jpeg"
+                  alt="profile-picture"
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {selectedStudent.First} {selectedStudent.Last}
+                  </Typography>
+                  <figcaption variant="body2" color="text.secondary">
+                    Student
+                  </figcaption>
+                </CardContent>
+              </Card>
+            </div>
 
             <div className="student-specifics">
               <div className="student-info-containers"></div>
