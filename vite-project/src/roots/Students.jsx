@@ -7,6 +7,7 @@ import "../styles/Students.css";
 
 const Students = () => {
   const [students, setStudents] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [isAddingStudent, setIsAddingStudent] = useState(false);
 
@@ -38,8 +39,26 @@ const Students = () => {
     }
   };
 
-  const handleSearch = () => {};
-  // Handle filtering student query
+  const handleSearch = () => {
+    if (searchQuery.trim() === "") {
+      // If search query is empty, fetch all students again
+      fetchStudents();
+    } else {
+      // Filter students based on the search query
+      const filteredStudents = students.filter(
+        (student) =>
+          student.First.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          student.Last.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      if (filteredStudents.length === 0) {
+        // If no matching students found, set an empty array
+        setStudents([]);
+      } else {
+        // Set filtered students
+        setStudents(filteredStudents);
+      }
+    }
+  };
 
   const handleStudentClick = (student) => {
     // Handle whether user wants to learn more about specific student
@@ -106,7 +125,12 @@ const Students = () => {
           <h1> All Students</h1>
           <p> Browse through the list of all Students</p>
           <div className="search">
-            <input type="text" placeholder="Filter by name" />
+            {/* onChange to update the changes that user inputted so that the list only display only the students that match the search query*/}
+            <input
+              type="text"
+              placeholder="Filter by name"
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
           <Button onClick={handleSearch} variant="contained">
             Search
