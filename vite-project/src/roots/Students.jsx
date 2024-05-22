@@ -298,7 +298,7 @@ const Students = () => {
               <div className="student-info-containers"></div>
               <div className="academic-info">
                 <h2>Academic Information </h2>
-                <p> Enrolled In: {selectedStudent.enrolledIn || "N/A"}</p>
+                <p> Enrolled In: {selectedStudent.enrolledIn ? selectedStudent.enrolledIn.join(', ') : "N/A"}</p>
                 <p> Average Grade: {selectedStudent.Grade || "N/A"}</p>
                 <p> Teacher Supervisor: {selectedStudent.Teacher || "N/A"} </p>
               </div>
