@@ -69,7 +69,7 @@ const Calendar = () => {
                 <div className="overlay"></div>
                 <h1 className="homeScreenHeader">School Calendar</h1>
             </div>
-            <hr></hr>
+            <hr className = "homePageHr"></hr>
 
             <Card  sx={{paddingLeft: "50px", paddingRight : "50px", paddingTop: "30px", paddingBottom: "30px", marginTop: "5vh", boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.2)'}}>
             <Typography variant="body1" color="text.secondary" id = "homePageCardDesc">

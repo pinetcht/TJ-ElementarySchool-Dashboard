@@ -96,7 +96,7 @@ const Teachers = () => {
         <div className="overlay"></div>
         <h1 className="teacherScreenHeader">Teacher Directory</h1>
       </div>
-      <hr></hr>
+      <hr className = "homePageHr"></hr>
       <Card className="main-wrapper" sx={{boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.2)'}}>
         <div className="left-panel">
           <h1>All Teachers</h1>
