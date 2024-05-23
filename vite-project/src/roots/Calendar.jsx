@@ -1,7 +1,6 @@
 import {React, useState, useEffect} from 'react';
 import {Button, Dialog, DialogContent, DialogTitle, TextField, Typography, Grid} from '@mui/material';
 import { db } from "../../firebase";
-import Navbar from './components/Navbar';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import {collection, doc, getDocs, updateDoc, setDoc, deleteDoc} from "firebase/firestore";
@@ -71,7 +70,6 @@ const Calendar = () => {
 
     return (
       <>
-      <Navbar/>
       <h1>School Calendar</h1>
       <Grid container direction="row" alignItems="center" justifyContent="center" spacing={1}>
           <Grid item xs={1.5}>
