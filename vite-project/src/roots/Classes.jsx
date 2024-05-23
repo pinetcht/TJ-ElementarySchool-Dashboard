@@ -27,12 +27,12 @@ import {
 const Classes = () => {
   const [students, setStudents] = useState(null);
   const [thisClass, setClass] = useState(null);
-  // const [selectedClass, setSelectedClass] = useState(null);
   const [classes, setAllClasses] = useState(null);
   const [grade, setGrade] = useState();
   const [editGrade, setEditGrade] = useState(false);
   const [editGradeIndex, setEditGradeIndex] = useState(null);
   const [teacherName, setTeacherName] = useState(null);
+  const [teacherNames, setTeacherNames] = useState({});
   const [classSelected, setClassSelected] = useState(false);
 
   const fetchStudents = async () => {
@@ -58,6 +58,21 @@ const Classes = () => {
     fetchStudents();
   }, []);
 
+  const fetchAllTeacherNames = async () => {
+    const names = {};
+    for (const eachClass of classes) {
+      if (eachClass.Teacher) {
+        const name = await fetchTeacherName(eachClass.Teacher);
+        names[eachClass.Teacher] = name;
+      }
+    }
+    setTeacherNames(names);
+  }
+
+  useEffect(() => {
+    fetchAllTeacherNames()
+  }, [classes])
+
   const fetchTeacherName = async (teacherRef) => {
     try {
       const teacherDoc = await getDoc(doc(db, "teachers", teacherRef));
@@ -74,6 +89,7 @@ const Classes = () => {
       return "N/A";
     }
   };
+
 
   const fetchSelectedClass = async () => {
     try {
@@ -104,12 +120,6 @@ const Classes = () => {
       console.error("Cannot load classes", error);
     }
   };
-
-  useEffect(() => {
-    if(teacherName) {
-      console.log(teacherName)
-    }
-  }, [teacherName])
 
   useEffect(() => {
     fetchSelectedClass();
@@ -176,7 +186,7 @@ const Classes = () => {
         <>
           <h1>Class roster</h1>
           <p> Select a class to view additional info! </p>
-          {classes && (
+          {(classes && teacherNames) && (
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 550 }} aria-label="simple table">
                 <TableHead>
@@ -205,7 +215,7 @@ const Classes = () => {
                           {eachClass.Name}
                         </TableCell>
                         <TableCell align="left">
-                          { fetchTeacherName(eachClass.Teacher) }
+                          { teacherNames[eachClass.Teacher] || "Loading..."}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -237,7 +247,7 @@ const Classes = () => {
                     <br></br>
                     <b>End Time:</b> {thisClass.End_time}
                     <br></br>
-                    <b>Teacher:</b> {teacherName || "Loading..."}
+                    <b>Teacher:</b> {teacherNames[thisClass.Teacher]  || "Loading..."}
                   </p>
                 </div>
               </>
