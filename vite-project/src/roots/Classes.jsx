@@ -10,6 +10,7 @@ import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import { db } from "../../firebase";
+import TextField from '@mui/material/TextField';
 import { addDoc, getDocs, getDoc, doc, collection } from "firebase/firestore";
 
 const Classes = () => {
@@ -17,6 +18,7 @@ const Classes = () => {
   const [thisClass, setClass] = useState(null);
   const [grade, setGrade] = useState();
   const [editGrade, setEditGrade] = useState(false);
+  const [editGradeIndex, setEditGradeIndex] = useState(null);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -62,14 +64,18 @@ const Classes = () => {
     fetchClasses();
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, index) => {
     e.preventDefault();
-    const docRef = await addDoc(collection(db, "Students"),{
-      Grade: grade,
+    const docRef = await addDoc(collection(db, "Students"), {
+      Grade: e.target.value,
     });
+    setEditGradeIndex(null);
   };
 
-  
+  const handleGradeChange = (e, index) => {
+    const newGrade = e.target.value;
+  };
+
   return (
     <>
       {thisClass && (
@@ -110,11 +116,17 @@ const Classes = () => {
                       </TableCell>
                       <TableCell align="left">{row.Last}</TableCell>
                       <TableCell align="left">
-                        {editGrade ? (
-                          <form onSubmit={ handleSubmit }>
-                            <input type="text" onChange={ (e) => setGrade(e.target.value) }></input>
-                            <button type="submit"> Submit</button>
-                          </form>
+                        {editGrade && editGradeIndex === row.id ? (
+                          <>
+                            <form onSubmit={(e) => handleSubmit(e, row.id)}>
+                              <input
+                                type="text"
+                                value={grade}
+                                onChange={(e) => handleGradeChange(e, row.id)}
+                              ></input>
+                              <button type="submit"> Submit</button>
+                            </form>
+                          </>
                         ) : (
                           row.Grade
                         )}
@@ -123,6 +135,8 @@ const Classes = () => {
                           variant="filled"
                           onClick={() => {
                             setEditGrade(!editGrade);
+                            setEditGradeIndex(row.id);
+                            setGrade(row.Grade);
                           }}
                         >
                           <EditIcon />
