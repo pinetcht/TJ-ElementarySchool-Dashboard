@@ -1,5 +1,5 @@
 import {React, useState, useEffect} from 'react';
-import {Button, Dialog, DialogContent, DialogTitle, TextField, Typography, Grid} from '@mui/material';
+import {Button, Dialog, DialogContent, DialogTitle, TextField, Typography, Grid, Card} from '@mui/material';
 import { db } from "../../firebase";
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -67,13 +67,14 @@ const Calendar = () => {
             <div className="image-container">
                 <img src="/homePageSchool.jpeg" alt="School Image" className="full-width-image"></img>
                 <div className="overlay"></div>
-                <h1 className="homeScreenHeader">Welcome</h1>
+                <h1 className="homeScreenHeader">School Calendar</h1>
             </div>
             <hr></hr>
-            <h1>School Calendar</h1>
+            <Card  sx={{paddingLeft: "50px", paddingRight : "50px", paddingTop: "30px", paddingBottom: "30px", marginTop: "5vh"}}>
+
             <Grid container direction="row" alignItems="center" justifyContent="center" spacing={1}>
                 <Grid item xs={1.5}>
-                    <Button variant="contained" onClick={handleaddOpen}>Add Event</Button>
+                    <Button variant="contained" onClick={handleaddOpen} sx={{background: '#147a7c', '&:hover': {backgroundColor: '#0f5f60',},}}>Add Event</Button>
                 </Grid>
                 <Grid item xs={1.5}>
                     <Button color="error" variant="contained" onClick={handleDelOpen}>Delete Event</Button>
@@ -111,6 +112,7 @@ const Calendar = () => {
                 plugins={[dayGridPlugin]}
                 initialView="dayGridMonth"
                 events={events} />
+            </Card>
         </>
     );
 };
