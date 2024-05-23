@@ -21,19 +21,18 @@
   z-index: 1;
 }
 
-
 .teacherScreenHeader {
   position: absolute;
-    top: 27%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2; 
-    color: white; 
-    font-size: 5em; 
-    text-align: center; 
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    animation: fadeIn 1s ease-in-out;
-    font-family: 'Lato', sans-serif;
+  top: 27%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2; 
+  color: white; 
+  font-size: 5em; 
+  text-align: center; 
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 1s ease-in-out;
+  font-family: 'Lato', sans-serif;
 }
 
 .main-wrapper {
@@ -85,7 +84,7 @@
   border-bottom: none;
 }
 
-.teacher-avatar, .teacher-avatar-large {
+.teacher-avatar {
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -96,7 +95,10 @@
 .teacher-avatar-large {
   width: 100px;
   height: 100px;
-  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: #ddd;
+  margin: 0 auto;
+  display: block;
 }
 
 .teacher-info {

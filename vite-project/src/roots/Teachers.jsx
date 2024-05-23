@@ -2,15 +2,7 @@ import React, { useState, useEffect } from "react";
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import "../styles/Teachers.css";
-import {
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-  Button,
-  Grid,
-  RadioGroup, Radio, Select, MenuItem, FormControl, TextField, FormLabel, FormControlLabel, Checkbox
-} from "@mui/material";
+import { Button } from "@mui/material";
 
 const Teachers = () => {
   const [allTeachers, setAllTeachers] = useState([]);
@@ -114,7 +106,7 @@ const Teachers = () => {
           <div className="teacher-list">
             {teachers.map((teacher) => (
               <div className="teacher-item" key={teacher.id} onClick={() => handleTeacherClick(teacher)}>
-                <div className="teacher-avatar"></div>
+                <img src={teacher.photoURL || "/defaultAvatar.png"} alt={`${teacher.First} ${teacher.Last}`} className="teacher-avatar" />
                 <div className="teacher-info">
                   <p className="teacher-name">{teacher.First} {teacher.Last}</p>
                   <p className="teacher-department">{teacher.Subject}</p>
@@ -128,7 +120,7 @@ const Teachers = () => {
         <div className="right-panel">
           {selectedTeacher ? (
             <div className="teacher-detail">
-              <div className="teacher-avatar-large"></div>
+              <img src={selectedTeacher.photoURL || "/defaultAvatar.png"} alt={`${selectedTeacher.First} ${selectedTeacher.Last}`} className="teacher-avatar-large" />
               <h3>{selectedTeacher.First} {selectedTeacher.Last}</h3>
               <div className="teacher-contact">
                 <h4>Contact Information</h4>
