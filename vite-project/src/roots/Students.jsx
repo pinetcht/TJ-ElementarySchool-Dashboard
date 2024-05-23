@@ -209,15 +209,6 @@ const Students = () => {
   };
   
 
-
-
-
-
-
-
-
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 

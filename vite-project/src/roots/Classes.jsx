@@ -18,6 +18,7 @@ import { addDoc, getDocs, getDoc, doc, collection, updateDoc } from "firebase/fi
 const Classes = () => {
   const [students, setStudents] = useState(null);
   const [thisClass, setClass] = useState(null);
+  const [classes, setAllClasses] = useState(null);
   const [grade, setGrade] = useState();
   const [editGrade, setEditGrade] = useState(false);
   const [editGradeIndex, setEditGradeIndex] = useState(null);
@@ -36,6 +37,7 @@ const Classes = () => {
         }));
 
         setStudents(allStudents);
+        console.log(allStudents)
       } else {
         console.log("No student document!");
       }
@@ -49,7 +51,7 @@ const Classes = () => {
   }, []);
 
   useEffect(() => {
-    const fetchClasses = async () => {
+    const fetchSelectedClass = async () => {
       try {
         const querySnapshot = await getDoc(
           doc(db, "Classes", "1lJfsnl3Ah0QjgwBNZpA")
@@ -70,7 +72,30 @@ const Classes = () => {
       }
     };
   
-    fetchClasses();
+    fetchSelectedClass();
+  }, []);
+
+  const fetchAllClasses = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "Classes"));
+      if (querySnapshot != null) {
+        const allClasses = querySnapshot.docs.map((doc, key) => ({
+          id: doc.id,
+          key,
+          ...doc.data(),
+        }));
+
+        setAllClasses(allClasses);
+      } else {
+        console.log("No classes document!");
+      }
+    } catch (error) {
+      console.error("Cannot load all the classes", error);
+    }
+  };
+  
+  useEffect(() => {
+    fetchAllClasses();
   }, []);
   
 
@@ -121,7 +146,36 @@ const Classes = () => {
    
 
       {!classSelected ? (
-        <h1>hi</h1>
+        <>
+        <h1>Class roster</h1>
+        {classes && (
+           <TableContainer component={Paper}>
+           <Table sx={{ minWidth: 550 }} aria-label="simple table">
+             <TableHead>
+               <TableRow>
+                 <TableCell>Class Name</TableCell>
+                 <TableCell align="left">Teacher</TableCell>
+               </TableRow>
+             </TableHead>
+             <TableBody>
+               {classes &&
+                 classes.map((eachClass) => ( 
+                   <TableRow key={eachClass.id} onClick={ () => handleClassClick(eachClass)}>
+                     <TableCell component="th" scope="row">
+                       {eachClass.Name}
+                     </TableCell>
+                     <TableCell align="left">{fetch}</TableCell>
+                     
+                   </TableRow>
+                 ))}
+             </TableBody>
+           </Table>
+         </TableContainer>
+        )
+        }
+
+        </>
+
       ) : (
         <> {thisClass && (        
           <>
