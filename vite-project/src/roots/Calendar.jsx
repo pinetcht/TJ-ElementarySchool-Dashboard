@@ -35,17 +35,16 @@ const Calendar = () => {
     }
 
     const showEvents = async () => {
-        const documents = await getDocs(collection(db, "Events"));
-        console.log(documents)
-        let list = [];
-        documents.forEach((events) => list.push({...events.data()}));
-        setEvents(list);
-        console.log(list);
-    }
+      const documents = await getDocs(collection(db, "Events"));
+      let list = [];
+      documents.forEach((event) => list.push({ id: event.id, title: event.data().Name, start: event.data().Date }));
+      setEvents(list);
+      console.log(list);
+  };
 
-    useEffect(() => {
-        showEvents();
-    }, []);
+  useEffect(() => {
+      showEvents();
+  }, []);
 
     const addEvent = async() =>{
       setDoc(doc(db, "Events", inputTitle), {
