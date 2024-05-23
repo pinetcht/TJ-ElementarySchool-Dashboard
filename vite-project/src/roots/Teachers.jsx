@@ -2,7 +2,15 @@ import React, { useState, useEffect } from "react";
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import "../styles/Teachers.css";
-import { Button } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Button,
+  Grid,
+  RadioGroup, Radio, Select, MenuItem, FormControl, TextField, FormLabel, FormControlLabel, Checkbox
+} from "@mui/material";
 
 const Teachers = () => {
   const [allTeachers, setAllTeachers] = useState([]);
