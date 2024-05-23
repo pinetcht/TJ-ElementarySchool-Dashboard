@@ -185,7 +185,18 @@ const Students = () => {
 
 
 
-
+  const createGradebookEntry = async (studentId, classId) => {
+    try {
+      await addDoc(collection(db, "Gradebook"), {
+        studentId,
+        classId,
+        grade: 0,
+      });
+      console.log(`Gradebook entry created for student ${studentId} in class ${classId}`);
+    } catch (error) {
+      console.error("Error adding Gradebook entry: ", error);
+    }
+  };
 
 
 
@@ -206,10 +217,6 @@ const Students = () => {
       Teacher,
       enrolledIn,
     };
-  
-    // Log the newStudent object before adding it to Firestore
-    //console.log("Submitting new student: ", newStudent);
-    //console.log(newStudent);
     
     
     try {
@@ -217,6 +224,10 @@ const Students = () => {
       console.log("Document written with ID: ", docRef.id);
       fetchStudents();
       
+      //Now create gradebook enteries for the courses students were enrolled in
+      enrolledIn.forEach((classId) => {
+        createGradebookEntry(docRef.id, classId);
+      });
 
       // Clear form fields after submission for better user experience
       setFirst("");
@@ -227,6 +238,7 @@ const Students = () => {
     } catch (error) {
       console.error("Error adding document: ", error);
     }
+
     
   };
 
@@ -327,20 +339,29 @@ const Students = () => {
 
   const fetchStudentGrades = async (studentId) => {
     try {
-      // Fetch all documents from the Gradebook collection
-      const gradebookSnapshot = await getDocs(collection(db, "Gradebook"));
+      // Create a query against the Gradebook collection where the Student field matches the studentId
+      const gradebookQuery = query(
+        collection(db, "Gradebook"),
+        where("studentId", "==", studentId)
+      );
+
+      //console.log("F" + studentId + "F");
+  
+      // Fetch the documents that match the query
+      const gradebookSnapshot = await getDocs(gradebookQuery);
   
       const grades = [];
   
-      // Iterate through each document in the Gradebook collection
-      for (const doc of gradebookSnapshot.docs) {
-        const curGrade = doc.data(); 
-        console.log(curGrade); 
-        if (curGrade.Student === studentId) {
-          grades.push(curGrade);
-        }
-      }
+      // Iterate through each document in the query snapshot
+      gradebookSnapshot.forEach((doc) => {
+        const curGrade = doc.data();
+        console.log("   ", curGrade);
+        grades.push(curGrade);
+      });
+  
+      // Set the student grades state
       setStudentGrades(grades);
+      console.log(grades);
     } catch (error) {
       console.error("Error fetching student grades: ", error);
     }
@@ -508,7 +529,7 @@ const Students = () => {
               <div className="academic-info">
                 <h2>Academic Information </h2>
                 <p> Enrolled In: {selectedStudent.enrolledIn ? selectedStudent.enrolledIn.join(', ') : "N/A"}</p>
-                <p> Average Grade: {selectedStudent.Grade || "N/A"}</p>
+                <p> Grade Level: {selectedStudent.Grade || "N/A"}</p>
                 <p>Teacher: {selectedStudent.Teacher || "N/A"}</p>
               </div>
               <div className="contact-info">
@@ -530,7 +551,7 @@ const Students = () => {
                 <h2> Grades</h2>
                 {studentGrades.length > 0 ? (
                   studentGrades.map((grade, index) => (
-                    <p key={index}>{grade.Class}: {grade.Grade}</p>
+                    <p key={index}>{grade.classId}: {grade.grade}</p>
                   ))
                 ) : (
                   <p>No grades available</p>
