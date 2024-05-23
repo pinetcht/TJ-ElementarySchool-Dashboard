@@ -70,7 +70,7 @@ const Calendar = () => {
                 <h1 className="homeScreenHeader">School Calendar</h1>
             </div>
             <hr></hr>
-            <Card  sx={{paddingLeft: "50px", paddingRight : "50px", paddingTop: "30px", paddingBottom: "30px", marginTop: "5vh"}}>
+            <Card  sx={{paddingLeft: "50px", paddingRight : "50px", paddingTop: "30px", paddingBottom: "30px", marginTop: "5vh", boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.2)'}}>
 
             <Grid container direction="row" alignItems="center" justifyContent="center" spacing={1}>
                 <Grid item xs={1.5}>
