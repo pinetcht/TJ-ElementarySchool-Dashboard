@@ -13,6 +13,7 @@ import { db } from "../../firebase";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { query, where } from "firebase/firestore";  
 import "../styles/Students.css";
 
 import {
@@ -28,9 +29,12 @@ const Classes = () => {
   const [students, setStudents] = useState(null);
   const [thisClass, setClass] = useState(null);
   const [classes, setAllClasses] = useState(null);
+
   const [grade, setGrade] = useState();
   const [editGrade, setEditGrade] = useState(false);
   const [editGradeIndex, setEditGradeIndex] = useState(null);
+  const [studentGrades, setStudentGrades] = useState({});
+
   const [teacherName, setTeacherName] = useState(null);
   const [teacherNames, setTeacherNames] = useState({});
   const [classSelected, setClassSelected] = useState(false);
@@ -76,7 +80,7 @@ const Classes = () => {
   const fetchTeacherName = async (teacherRef) => {
     try {
       const teacherDoc = await getDoc(doc(db, "teachers", teacherRef));
-      console.log(teacherDoc);
+
       if (teacherDoc.exists()) {
         const teacherData = teacherDoc.data();
         return `${teacherData.First} ${teacherData.Last}`;
@@ -121,8 +125,42 @@ const Classes = () => {
     }
   };
 
+  const fetchStudentGrades = async (classId) => {
+    try {
+      // Create a query against the Gradebook collection where the Student field matches the studentId
+      const gradebookQuery = query(
+        collection(db, "Gradebook"),where("classId", "==", classId)
+      );
+
+ 
+      // Fetch the documents that match the query
+      const gradebookSnapshot = await getDocs(gradebookQuery);
+  
+      const grades = {};
+  
+      // Iterate through each document in the query snapshot
+      gradebookSnapshot.forEach((doc) => {
+        const curGrade = doc.data();
+        console.log("   ", curGrade);
+        grades[curGrade.studentId] = curGrade.grade;
+      });
+  
+      // Set the student grades state
+      setStudentGrades(grades);
+      console.log(grades);
+    } catch (error) {
+      console.error("Error fetching student grades: ", error);
+    }
+  };
+
+
   useEffect(() => {
-    fetchSelectedClass();
+    if(thisClass) {
+      fetchSelectedClass();
+      fetchStudentGrades(thisClass.id);
+      console.log(thisClass)
+    }
+
   }, [thisClass]);
 
   const fetchAllClasses = async () => {
@@ -143,6 +181,7 @@ const Classes = () => {
       console.error("Cannot load all the classes", error);
     }
   };
+
 
   useEffect(() => {
     fetchAllClasses();
@@ -169,16 +208,6 @@ const Classes = () => {
     setClass(selectedClass);
     setClassSelected(true);
   };
-
-  useEffect(() => {
-    if(thisClass) {
-      console.log(thisClass);
-      console.log(thisClass.Start_time);
-      console.log(thisClass.End_time);
-    }
-
-  }, [thisClass])
- 
 
   return (
     <>
@@ -267,19 +296,19 @@ const Classes = () => {
                   </TableHead>
                   <TableBody>
                     {students &&
-                      students.map((row) => (
-                        <TableRow key={row.id}>
+                      students.map((student) => (
+                        <TableRow key={student.id}>
                           <TableCell component="th" scope="row">
-                            {row.First}
+                            {student.First}
                           </TableCell>
-                          <TableCell align="left">{row.Last}</TableCell>
+                          <TableCell align="left">{student.Last}</TableCell>
                           <TableCell align="left">
-                            {editGrade && editGradeIndex === row.id ? (
+                            {editGrade && editGradeIndex === student.id ? (
                               <>
-                                <form onSubmit={(e) => handleSubmit(e, row.id)}>
+                                <form onSubmit={(e) => handleSubmit(e, student.id)}>
                                   <TextField
                                     type="text"
-                                    defaultValue={grade}
+                                    defaultValue={studentGrades[student.id]}
                                     onChange={(e) => handleGradeChange(e)}
                                     variant="outlined"
                                     size="small"
@@ -291,15 +320,15 @@ const Classes = () => {
                                 </form>
                               </>
                             ) : (
-                              row.Grade
+                              studentGrades[student.id]
                             )}
 
                             <IconButton
                               variant="filled"
                               onClick={() => {
                                 setEditGrade(!editGrade);
-                                setEditGradeIndex(row.id);
-                                setGrade(row.Grade);
+                                setEditGradeIndex(student.id);                                
+                                setGrade(student.Grade);
                               }}
                             >
                               <EditIcon />

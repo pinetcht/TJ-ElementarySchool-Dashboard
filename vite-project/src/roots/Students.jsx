@@ -114,6 +114,10 @@ const Students = () => {
 
 
 
+
+
+
+
   const getTeacherIdByName = async (firstName, lastName) => {
     try {
       // Query Firestore to get the teacher's ID
@@ -177,8 +181,6 @@ const Students = () => {
   };
   
 
-<<<<<<< HEAD
-=======
 
 
 
@@ -199,7 +201,6 @@ const Students = () => {
 
 
 
->>>>>>> main
   const handleSubmit = async (e) => {
     e.preventDefault();
 
