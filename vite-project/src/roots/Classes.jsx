@@ -55,6 +55,7 @@ const Classes = () => {
           const fetchedClass = querySnapshot.data();
 
           setClass(fetchedClass);
+          console.log(thisClass.Teacher)
         } else {
           console.log("No class document!");
         }
@@ -66,11 +67,34 @@ const Classes = () => {
     fetchClasses();
   }, []);
 
+  const fetchTeacherName = async (teacherRef) => {
+    try {
+      const teacherDoc = await getDoc(teacherRef);
+      console.log(teacherDoc); 
+      if (teacherDoc.exists()) {
+        const teacherData = teacherDoc.data();
+        return `${teacherData.First} ${teacherData.Last}`;
+      } else {
+        //console.error("Teacher document not found");
+        return "N/A";
+      }
+    } catch (error) {
+      console.error("Error fetching teacher data:", error);
+      return "N/A";
+    }
+  };
+
+  useEffect(() => {
+    fetchTeacherName();
+  }, []);
+
+
   const handleSubmit = async (e, index) => {
     e.preventDefault();
     await updateDoc(doc(db, "Students", index), {
       Grade : grade,
     });
+    
     setEditGradeIndex(null);
     setEditGrade(false)
     fetchStudents()
@@ -81,9 +105,12 @@ const Classes = () => {
     setGrade(newGrade)
   };
 
+
+
   return (
     <>
-      {thisClass && (
+   
+      {thisClass && (        
         <>
           <h1>{thisClass.Name} Class</h1>
           <div>
@@ -91,9 +118,10 @@ const Classes = () => {
             <p>Welcome students!</p>
             <p>
               <b>Start Time:</b> {thisClass.Start_time}
-            </p>
-            <p>
+              <br></br>    
               <b>End Time:</b> {thisClass.End_time}
+              <br></br>
+              <b>Teacher:</b> {fetchTeacherName(thisClass.Teacher)}
             </p>
           </div>
         </>
@@ -127,7 +155,7 @@ const Classes = () => {
                               <TextField
                                 type="text"
                                 defaultValue={grade}
-                                onChange={(e) => handleGradeChange(e, row.id)}
+                                onChange={(e) => handleGradeChange(e)}
                                 variant="outlined"
                                 size="small"
                                 InputProps={{

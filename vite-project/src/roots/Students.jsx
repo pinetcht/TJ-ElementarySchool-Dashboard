@@ -146,10 +146,6 @@ const Students = () => {
 
 
 
-
-
-
-
   const getTeacherIdByName = async (firstName, lastName) => {
     try {
       // Query Firestore to get the teacher's ID
