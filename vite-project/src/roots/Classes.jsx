@@ -11,7 +11,9 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import { db } from "../../firebase";
 import TextField from '@mui/material/TextField';
-import { addDoc, getDocs, getDoc, doc, collection } from "firebase/firestore";
+import Button from '@mui/material/Button';
+
+import { addDoc, getDocs, getDoc, doc, collection, updateDoc } from "firebase/firestore";
 
 const Classes = () => {
   const [students, setStudents] = useState(null);
@@ -20,26 +22,26 @@ const Classes = () => {
   const [editGrade, setEditGrade] = useState(false);
   const [editGradeIndex, setEditGradeIndex] = useState(null);
 
-  useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "Students"));
-        if (querySnapshot != null) {
-          const allStudents = querySnapshot.docs.map((doc, key) => ({
-            id: doc.id,
-            key,
-            ...doc.data(),
-          }));
+  const fetchStudents = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "Students"));
+      if (querySnapshot != null) {
+        const allStudents = querySnapshot.docs.map((doc, key) => ({
+          id: doc.id,
+          key,
+          ...doc.data(),
+        }));
 
-          setStudents(allStudents);
-        } else {
-          console.log("No student document!");
-        }
-      } catch (error) {
-        console.error("Cannot load students", error);
+        setStudents(allStudents);
+      } else {
+        console.log("No student document!");
       }
-    };
-
+    } catch (error) {
+      console.error("Cannot load students", error);
+    }
+  };
+  
+  useEffect(() => {
     fetchStudents();
   }, []);
 
@@ -66,14 +68,17 @@ const Classes = () => {
 
   const handleSubmit = async (e, index) => {
     e.preventDefault();
-    const docRef = await addDoc(collection(db, "Students"), {
-      Grade: e.target.value,
+    await updateDoc(doc(db, "Students", index), {
+      Grade : grade,
     });
     setEditGradeIndex(null);
+    setEditGrade(false)
+    fetchStudents()
   };
 
-  const handleGradeChange = (e, index) => {
+  const handleGradeChange = (e) => {
     const newGrade = e.target.value;
+    setGrade(newGrade)
   };
 
   return (
@@ -119,12 +124,17 @@ const Classes = () => {
                         {editGrade && editGradeIndex === row.id ? (
                           <>
                             <form onSubmit={(e) => handleSubmit(e, row.id)}>
-                              <input
+                              <TextField
                                 type="text"
-                                value={grade}
+                                defaultValue={grade}
                                 onChange={(e) => handleGradeChange(e, row.id)}
-                              ></input>
-                              <button type="submit"> Submit</button>
+                                variant="outlined"
+                                size="small"
+                                InputProps={{
+                                  style: { width: `80px` },
+                                }}
+                              ></TextField>
+                              <Button type="submit"> Submit</Button>
                             </form>
                           </>
                         ) : (
