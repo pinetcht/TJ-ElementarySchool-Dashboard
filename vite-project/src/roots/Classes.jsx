@@ -21,6 +21,8 @@ const Classes = () => {
   const [grade, setGrade] = useState();
   const [editGrade, setEditGrade] = useState(false);
   const [editGradeIndex, setEditGradeIndex] = useState(null);
+  const [teacherName, setTeacherName] = useState(null);
+
 
   const fetchStudents = async () => {
     try {
@@ -53,9 +55,12 @@ const Classes = () => {
         );
         if (querySnapshot != null) {
           const fetchedClass = querySnapshot.data();
-
           setClass(fetchedClass);
-          console.log(thisClass.Teacher)
+  
+          if (fetchedClass.Teacher) {
+            const teacherName = await fetchTeacherName(fetchedClass.Teacher);
+            setTeacherName(teacherName);
+          }
         } else {
           console.log("No class document!");
         }
@@ -63,10 +68,12 @@ const Classes = () => {
         console.error("Cannot load classes", error);
       }
     };
-
+  
     fetchClasses();
   }, []);
+  
 
+  
   const fetchTeacherName = async (teacherRef) => {
     try {
       const teacherDoc = await getDoc(teacherRef);
@@ -83,6 +90,7 @@ const Classes = () => {
       return "N/A";
     }
   };
+  
 
   useEffect(() => {
     fetchTeacherName();
@@ -121,7 +129,7 @@ const Classes = () => {
               <br></br>    
               <b>End Time:</b> {thisClass.End_time}
               <br></br>
-              <b>Teacher:</b> {fetchTeacherName(thisClass.Teacher)}
+              <b>Teacher:</b> {teacherName || "Loading..."}
             </p>
           </div>
         </>
