@@ -291,20 +291,6 @@ const Students = () => {
     fetchStudents();
   }, []);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   //
 
   const handleCheckboxChange = (event) => {
