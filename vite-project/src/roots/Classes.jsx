@@ -41,39 +41,56 @@ const Classes = () => {
   const [teacherNames, setTeacherNames] = useState({});
   const [classSelected, setClassSelected] = useState(false);
 
-  const fetchStudents = async (classId) => {
+
+  const fetchStudentById = async (studentId) => {
     try {
-      const querySnapshot = await getDoc(doc(db, "Classes", classId));
-
-      if (querySnapshot != null && classId) {
-        const classData = querySnapshot.data();
-
-        console.log(classData)
-        console.log(classData.Students)
-        const studentIds = classData.Students;
-
-        const studentsList = []
-        for (let studentId of studentIds) {
-          const fetchedStudent = await getDoc(doc(db, "Students", studentId))
-          const student = fetchedStudent.data()
-
-          studentsList.push({
-            id: studentId,
-            First: student.First,
-            Last: student.Last,
-            Grade: student.Grade,
-            enrolledIn: student.enrolledIn,
-            Teacher: student.Teacher,
-          });
-        }
-    
-        setStudents(studentsList);
-
+      const studentDocRef = doc(db, "Students", studentId);
+      const studentDoc = await getDoc(studentDocRef);
+  
+      if (studentDoc.exists()) {
+        const studentData = studentDoc.data();
+        const { First, Last } = studentData;
+        return { id: studentDoc.id, First, Last };
       } else {
-        console.log("No student document!");
+        console.log("No student document found with the provided ID!");
+        return null;
       }
     } catch (error) {
-      console.error("Cannot load students", error);
+      console.error("Error fetching student data: ", error);
+    }
+  };
+  
+  const fetchStudents = async (classId) => {
+    try {
+      const gradebookQuery = query(
+        collection(db, "Gradebook"),
+        where("classId", "==", classId)
+      );
+  
+      const querySnapshot = await getDocs(gradebookQuery);
+      const studentsList = [];
+  
+      for (const doc of querySnapshot.docs) {
+        const data = doc.data();
+        const student_id = data.studentId; 
+        
+        const studentIdentity = await fetchStudentById(student_id);
+        console.log("ID : ", studentIdentity);
+  
+        const studentData = {
+          grade: data.grade,
+          First: studentIdentity ? studentIdentity.First : null,
+          Last: studentIdentity ? studentIdentity.Last : null,
+        };
+  
+        studentsList.push(studentData);
+      }
+  
+      //console.log("Students List: ", studentsList);
+      setStudents(studentsList);
+      return studentsList;
+    } catch (error) {
+      console.error("Error fetching students: ", error);
     }
   };
 
@@ -154,13 +171,13 @@ const Classes = () => {
       // Iterate through each document in the query snapshot
       gradebookSnapshot.forEach((doc) => {
         const curGrade = doc.data();
-        console.log("   ", curGrade);
+        //console.log("   ", curGrade);
         grades[curGrade.studentId] = curGrade.grade;
       });
   
       // Set the student grades state
       setStudentGrades(grades);
-      console.log(grades);
+      //console.log(grades);
     } catch (error) {
       console.error("Error fetching student grades: ", error);
     }
@@ -202,7 +219,7 @@ const Classes = () => {
       fetchSelectedClass(thisClass.id);
       fetchStudentGrades(thisClass.id);
 
-      console.log(students)
+      //console.log(students)
     }
   }, [thisClass]);
 
@@ -231,7 +248,7 @@ const Classes = () => {
   };
 
   const handleClassClick = async (selectedClass) => {
-    console.log(selectedClass)
+    //console.log(selectedClass)
     setClass(selectedClass);
     setClassSelected(true);
   };
@@ -313,7 +330,6 @@ const Classes = () => {
                     <br></br>
                     <b>Teacher:</b> {teacherNames[thisClass.Teacher]  || "Loading..."}
                     <br></br>
-                    <b>Average Grade:</b> {thisClass.Average_grade}
                   </p>
                 </div>
               </>
