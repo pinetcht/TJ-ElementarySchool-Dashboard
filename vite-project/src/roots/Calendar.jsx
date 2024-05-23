@@ -70,8 +70,11 @@ const Calendar = () => {
                 <h1 className="homeScreenHeader">School Calendar</h1>
             </div>
             <hr></hr>
-            <Card  sx={{paddingLeft: "50px", paddingRight : "50px", paddingTop: "30px", paddingBottom: "30px", marginTop: "5vh"}}>
 
+            <Card  sx={{paddingLeft: "50px", paddingRight : "50px", paddingTop: "30px", paddingBottom: "30px", marginTop: "5vh", boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.2)'}}>
+            <Typography variant="body1" color="text.secondary" id = "homePageCardDesc">
+              Add or remove events from your school's calendar below!
+            </Typography>
             <Grid container direction="row" alignItems="center" justifyContent="center" spacing={1}>
                 <Grid item xs={1.5}>
                     <Button variant="contained" onClick={handleaddOpen} sx={{background: '#147a7c', '&:hover': {backgroundColor: '#0f5f60',},}}>Add Event</Button>

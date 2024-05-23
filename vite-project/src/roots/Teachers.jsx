@@ -89,7 +89,7 @@ const Teachers = () => {
         <h1 className="teacherScreenHeader">Teacher Directory</h1>
       </div>
       <hr></hr>
-      <div className="main-wrapper">
+      <Card className="main-wrapper" sx={{boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.2)'}}>
         <div className="left-panel">
           <h1>All Teachers</h1>
           <p>Browse through the list of all teachers</p>
@@ -186,7 +186,7 @@ const Teachers = () => {
             <p>Select a teacher to see more details</p>
           )}
         </div>
-      </div>
+      </Card>
     </div>
   );
 };
