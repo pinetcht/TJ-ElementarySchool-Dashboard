@@ -1,6 +1,8 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import Table from "@mui/material/Table";
+import Card from "@mui/material/Card";
+
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
@@ -217,6 +219,7 @@ const Classes = () => {
         <h1 className="homeScreenHeader">Classes</h1>
     </div>
     <hr></hr>
+      <Card  sx={{paddingLeft: "50px", paddingRight : "50px", paddingTop: "30px", paddingBottom: "30px", marginTop: "5vh", boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.2)'}}>
       {!classSelected ? (
         <>
           <h1>Class roster</h1>
@@ -349,6 +352,7 @@ const Classes = () => {
           </div>
         </>
       )}
+      </Card>
     </>
   );
 };
