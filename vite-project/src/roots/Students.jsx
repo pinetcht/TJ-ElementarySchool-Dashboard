@@ -198,26 +198,19 @@ const Students = () => {
       alert("Please fill in all fields");
       return;
     }
-
-    let teacher_id = await getTeacherIdByName(Teacher.First, Teacher.Last);
-    const teacherRef = doc(db, "teachers", teacher_id);
-    //console.log(enrolledIn); 
-
-    const enrolledInRefs = await Promise.all(
-      enrolledIn.map(async (className) => await getClassRefByName(className))
-    );
-    
     
     const newStudent = {
       First,
       Last,
       Grade,
-      Teacher: teacherRef,
-      enrolledIn: enrolledInRefs,
+      Teacher,
+      enrolledIn,
     };
   
     // Log the newStudent object before adding it to Firestore
-    console.log("Submitting new student: ", newStudent);
+    //console.log("Submitting new student: ", newStudent);
+    //console.log(newStudent);
+    
     
     try {
       const docRef = await addDoc(collection(db, "Students"), newStudent);
@@ -234,6 +227,7 @@ const Students = () => {
     } catch (error) {
       console.error("Error adding document: ", error);
     }
+    
   };
 
   // TODO: Handlers for the deletion of student from the list, reversing the way we worked with handleSubmit
@@ -276,16 +270,14 @@ const Students = () => {
   //
 
   const handleCheckboxChange = (event) => {
-    //From internet 
     const value = event.target.value;
     setEnrolledIn((prev) => {
       if (prev.includes(value)) {
-        return prev.filter((className) => className !== value);
+        return prev.filter((classId) => classId !== value);
       } else {
         return [...prev, value];
       }
     });
-    
   };
 
   useEffect(() => {
@@ -295,6 +287,7 @@ const Students = () => {
         const teachersList = [];
         grabInformation.forEach((doc) => {
           const data = doc.data();
+          data.id = doc.id; 
           teachersList.push(data);
         });
         setTeachers(teachersList);
@@ -314,9 +307,11 @@ const Students = () => {
         const classesList = [];
         grabInformation.forEach((doc) => {
           const data = doc.data();
+          data.id = doc.id; 
           classesList.push(data);
         });
         setClasses(classesList);
+        //console.log("classes" , classes);
       } catch (error) {
         console.error("Error fetching classes:", error);
       }
@@ -340,11 +335,11 @@ const Students = () => {
       // Iterate through each document in the Gradebook collection
       for (const doc of gradebookSnapshot.docs) {
         const curGrade = doc.data(); 
+        console.log(curGrade); 
         if (curGrade.Student === studentId) {
           grades.push(curGrade);
         }
       }
-  
       setStudentGrades(grades);
     } catch (error) {
       console.error("Error fetching student grades: ", error);
@@ -418,35 +413,35 @@ const Students = () => {
             </Select>
           </FormControl>
           <FormControl fullWidth margin="normal">
-            <FormLabel>Teacher</FormLabel>
-            <Select
-              value={Teacher}
-              onChange={(e) => setTeacher(e.target.value)}
-            >
-              <MenuItem value="">Select a teacher</MenuItem>
-              {teachers.map((teacher, index) => (
-                <MenuItem key={index} value={teacher}>
-                  {teacher.First} {teacher.Last}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl component="fieldset" fullWidth margin="normal">
-            <FormLabel component="legend">Enrolled In</FormLabel>
-            {classes.map((curClass, index) => (
-              <FormControlLabel
-                key={index}
-                control={
-                  <Checkbox
-                    checked={enrolledIn.includes(curClass.Name)}
-                    onChange={handleCheckboxChange}
-                    value={curClass.Name}
-                  />
-                }
-                label={curClass.Name}
-              />
+          <FormLabel>Teacher</FormLabel>
+          <Select
+            value={Teacher}
+            onChange={(e) => setTeacher(e.target.value)}
+          >
+            <MenuItem value="">Select a teacher</MenuItem>
+            {teachers.map((teacher, index) => (
+              <MenuItem key={index} value={teacher.id}>
+                {teacher.First} {teacher.Last}
+              </MenuItem>
             ))}
-          </FormControl>
+          </Select>
+        </FormControl>
+        <FormControl component="fieldset" fullWidth margin="normal">
+      <FormLabel component="legend">Enrolled In</FormLabel>
+      {classes.map((curClass, index) => (
+        <FormControlLabel
+          key={index}
+          control={
+            <Checkbox
+              checked={enrolledIn.includes(curClass.id)}
+              onChange={handleCheckboxChange}
+              value={curClass.id}
+            />
+          }
+          label={curClass.Name}
+        />
+      ))}
+    </FormControl>
           <Button sx={{background: '#147a7c', '&:hover': {backgroundColor: '#0f5f60',},}} type="submit" variant="contained" color="primary">Add Student</Button>
         </form>
       )}
