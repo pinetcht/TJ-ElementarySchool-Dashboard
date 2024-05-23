@@ -22,6 +22,7 @@ const Classes = () => {
   const [editGrade, setEditGrade] = useState(false);
   const [editGradeIndex, setEditGradeIndex] = useState(null);
   const [teacherName, setTeacherName] = useState(null);
+  const [classSelected, setClassSelected] = useState(false);
 
 
   const fetchStudents = async () => {
@@ -118,83 +119,89 @@ const Classes = () => {
   return (
     <>
    
-      {thisClass && (        
-        <>
-          <h1>{thisClass.Name} Class</h1>
-          <div>
-            <h2>General Info</h2>
-            <p>Welcome students!</p>
-            <p>
-              <b>Start Time:</b> {thisClass.Start_time}
-              <br></br>    
-              <b>End Time:</b> {thisClass.End_time}
-              <br></br>
-              <b>Teacher:</b> {teacherName || "Loading..."}
-            </p>
-          </div>
-        </>
-      )}
 
-      <div>
-        <h2>Roster</h2>
-
-        {students && (
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 550 }} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Student First Name</TableCell>
-                  <TableCell align="left">Student Last Name</TableCell>
-                  <TableCell align="left">Grade</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {students &&
-                  students.map((row) => (
-                    <TableRow key={row.id}>
-                      <TableCell component="th" scope="row">
-                        {row.First}
-                      </TableCell>
-                      <TableCell align="left">{row.Last}</TableCell>
-                      <TableCell align="left">
-                        {editGrade && editGradeIndex === row.id ? (
-                          <>
-                            <form onSubmit={(e) => handleSubmit(e, row.id)}>
-                              <TextField
-                                type="text"
-                                defaultValue={grade}
-                                onChange={(e) => handleGradeChange(e)}
-                                variant="outlined"
-                                size="small"
-                                InputProps={{
-                                  style: { width: `80px` },
-                                }}
-                              ></TextField>
-                              <Button type="submit"> Submit</Button>
-                            </form>
-                          </>
-                        ) : (
-                          row.Grade
-                        )}
-
-                        <IconButton
-                          variant="filled"
-                          onClick={() => {
-                            setEditGrade(!editGrade);
-                            setEditGradeIndex(row.id);
-                            setGrade(row.Grade);
-                          }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+      {!classSelected ? (
+        <h1>hi</h1>
+      ) : (
+        <> {thisClass && (        
+          <>
+            <h1>{thisClass.Name} Class</h1>
+            <div>
+              <h2>General Info</h2>
+              <p>Welcome students!</p>
+              <p>
+                <b>Start Time:</b> {thisClass.Start_time}
+                <br></br>    
+                <b>End Time:</b> {thisClass.End_time}
+                <br></br>
+                <b>Teacher:</b> {teacherName || "Loading..."}
+              </p>
+            </div>
+          </>
         )}
-      </div>
+  
+        <div>
+          <h2>Roster</h2>
+  
+          {students && (
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 550 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Student First Name</TableCell>
+                    <TableCell align="left">Student Last Name</TableCell>
+                    <TableCell align="left">Grade</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {students &&
+                    students.map((row) => (
+                      <TableRow key={row.id}>
+                        <TableCell component="th" scope="row">
+                          {row.First}
+                        </TableCell>
+                        <TableCell align="left">{row.Last}</TableCell>
+                        <TableCell align="left">
+                          {editGrade && editGradeIndex === row.id ? (
+                            <>
+                              <form onSubmit={(e) => handleSubmit(e, row.id)}>
+                                <TextField
+                                  type="text"
+                                  defaultValue={grade}
+                                  onChange={(e) => handleGradeChange(e)}
+                                  variant="outlined"
+                                  size="small"
+                                  InputProps={{
+                                    style: { width: `80px` },
+                                  }}
+                                ></TextField>
+                                <Button type="submit"> Submit</Button>
+                              </form>
+                            </>
+                          ) : (
+                            row.Grade
+                          )}
+  
+                          <IconButton
+                            variant="filled"
+                            onClick={() => {
+                              setEditGrade(!editGrade);
+                              setEditGradeIndex(row.id);
+                              setGrade(row.Grade);
+                            }}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </div></>
+      )}
+     
     </>
   );
 };
