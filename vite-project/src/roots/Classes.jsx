@@ -7,13 +7,16 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import EditIcon from "@mui/icons-material/Edit";
 import { db } from "../../firebase";
 import { addDoc, getDocs, getDoc, doc, collection } from "firebase/firestore";
 
 const Classes = () => {
   const [students, setStudents] = useState(null);
   const [thisClass, setClass] = useState(null);
+  const [grade, setGrade] = useState();
+  const [editGrade, setEditGrade] = useState(false);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -59,16 +62,14 @@ const Classes = () => {
     fetchClasses();
   }, []);
 
-  // useEffect(() => {
-  //   console.log(students);
-  //   // console.log(students[1].enrolledIn);
-  // }, [students]);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const docRef = await addDoc(collection(db, "Students"),{
+      Grade: grade,
+    });
+  };
 
-  // useEffect(() => {
-  //   console.log(thisClass);
-  //   console.log(thisClass.Start_time);
-  // }, [thisClass]);
-
+  
   return (
     <>
       {thisClass && (
@@ -92,25 +93,43 @@ const Classes = () => {
 
         {students && (
           <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <Table sx={{ minWidth: 550 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
                   <TableCell>Student First Name</TableCell>
-                  <TableCell align="right">Student Last Name</TableCell>
-                  <TableCell align="right">Grade</TableCell>
+                  <TableCell align="left">Student Last Name</TableCell>
+                  <TableCell align="left">Grade</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                { students && students.map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell component="th" scope="row">
-                      {row.First}
-                    </TableCell>
-                    <TableCell align="right">{row.Last}</TableCell>
-                    <TableCell align="right">{row.Grade}</TableCell>
-                    <TableCell align="right"><Button variant="outlined">Edit Grade</Button></TableCell>
-                  </TableRow>
-                ))}
+                {students &&
+                  students.map((row) => (
+                    <TableRow key={row.id}>
+                      <TableCell component="th" scope="row">
+                        {row.First}
+                      </TableCell>
+                      <TableCell align="left">{row.Last}</TableCell>
+                      <TableCell align="left">
+                        {editGrade ? (
+                          <form onSubmit={ handleSubmit }>
+                            <input type="text" onChange={ (e) => setGrade(e.target.value) }></input>
+                            <button type="submit"> Submit</button>
+                          </form>
+                        ) : (
+                          row.Grade
+                        )}
+
+                        <IconButton
+                          variant="filled"
+                          onClick={() => {
+                            setEditGrade(!editGrade);
+                          }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>
