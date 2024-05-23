@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, addDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import "../styles/Teachers.css";
 import {
@@ -19,6 +19,13 @@ const Teachers = () => {
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedTeacher, setEditedTeacher] = useState({});
+
+  const [isAddingTeacher, setIsAddingTeacher] = useState(false);
+  const [First, setFirst] = useState("");
+  const [Last, setLast] = useState("");
+  const [Subject, setSubject] = useState("");
+  const [Age, setAge] = useState("");
+
 
   const fetchTeachers = async () => {
     try {
@@ -85,6 +92,49 @@ const Teachers = () => {
     }
   };
 
+  const handleAddOption = () => {
+    // Handle whether user wants to add a new student
+    setIsAddingTeacher((prevState) => !prevState);
+  };
+
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!First || !Last || !Subject || !Age) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    const newTeacher = {
+      First,
+      Last,
+      Subject,
+      Age, 
+    };
+
+    try {
+      const docRef = await addDoc(collection(db, "teachers"), newTeacher);
+      //console.log("Document written with ID: ", docRef.id);
+      fetchTeachers(); 
+      
+
+      // Clear form fields after submission for better user experience
+      setFirst("");
+      setLast("");
+      setSubject(""); 
+      setAge(""); 
+
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
+
+
+
+    return; 
+  }
+
   return (
     <div>
       <div className="image-container">
@@ -101,6 +151,56 @@ const Teachers = () => {
         <div className="left-panel">
           <h1>All Teachers</h1>
           <p>Browse through the list of all teachers</p>
+
+
+
+          <div className="addTeacher-option" style={{ marginBottom: '40px' }}>
+      <figcaption onClick={handleAddOption}>
+        Can't find your teacher? {isAddingTeacher ? "▲" : "▼"}
+      </figcaption>
+      <br />
+      {isAddingTeacher && (
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="First Name"
+            value={First}
+            onChange={(e) => setFirst(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Last Name"
+            value={Last}
+            onChange={(e) => setLast(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Subject"
+            value={Subject}
+            onChange={(e) => setSubject(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+            <TextField
+            label="Age"
+            value={Age}
+            onChange={(e) => setAge(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <Button
+            sx={{ background: '#147a7c', '&:hover': { backgroundColor: '#0f5f60' } }}
+            type="submit"
+            variant="contained"
+            color="primary"
+          >
+            Add Teacher
+          </Button>
+        </form>
+      )}
+    </div>
+
 
           <div className="search">
             <input
