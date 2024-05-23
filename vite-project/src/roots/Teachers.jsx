@@ -2,6 +2,15 @@ import React, { useState, useEffect } from "react";
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import "../styles/Teachers.css";
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Button,
+  Grid,
+  RadioGroup, Radio, Select, MenuItem, FormControl, TextField, FormLabel, FormControlLabel, Checkbox
+} from "@mui/material";
 
 const Teachers = () => {
   const [allTeachers, setAllTeachers] = useState([]);
@@ -176,9 +185,9 @@ const Teachers = () => {
                 )}
               </div>
               {isEditing ? (
-                <button onClick={handleSaveClick}>Save</button>
+                <Button sx={{background: '#147a7c', '&:hover': {backgroundColor: '#0f5f60',},}}onClick={handleSaveClick} variant="contained">Save</Button>
               ) : (
-                <button onClick={handleEditClick}>Edit</button>
+                <Button sx={{background: '#147a7c', '&:hover': {backgroundColor: '#0f5f60',},}} onClick={handleEditClick} variant="contained">Edit</Button>
               )}
             </div>
           ) : (

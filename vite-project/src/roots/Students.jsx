@@ -383,7 +383,7 @@ const Students = () => {
               placeholder="Filter by name"
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <Button onClick={handleSearch} variant="contained">
+            <Button sx={{background: '#147a7c', '&:hover': {backgroundColor: '#0f5f60',},}} onClick={handleSearch} variant="contained">
               Search
             </Button>
           </div>
@@ -455,7 +455,7 @@ const Students = () => {
               />
             ))}
           </FormControl>
-          <Button type="submit" variant="contained" color="primary">Add Student</Button>
+          <Button sx={{background: '#147a7c', '&:hover': {backgroundColor: '#0f5f60',},}} type="submit" variant="contained" color="primary">Add Student</Button>
         </form>
       )}
     </div>
@@ -555,6 +555,7 @@ const Students = () => {
                     onClick={handleEdit}
                     variant="contained"
                     color="primary"
+                    sx={{background: '#147a7c', '&:hover': {backgroundColor: '#0f5f60',},}}
                   >
                     Edit Information
                   </Button>
