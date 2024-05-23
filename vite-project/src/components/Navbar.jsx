@@ -189,8 +189,8 @@ const Navbar = () => {
           ))}
         </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
+      <Box style={{ background: "#f5f2f2" }} component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <DrawerHeader/>
         <div>
         {renderContent()}
         </div>
