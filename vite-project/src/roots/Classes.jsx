@@ -272,6 +272,7 @@ const Classes = () => {
                           sx={{
                             "&.MuiTableCell-root:hover": {
                               color: "blue",
+                              cursor: "pointer"
                             },
                           }}
                         >
