@@ -41,9 +41,11 @@ const Students = () => {
 
   const [teachers, setTeachers] = useState([]);
   const [classes, setClasses] = useState([]);
-  const [enrolledIn, setEnrolledIn] = useState([]);
   const [selectedTeacherName, setSelectedTeacherName] = useState("");
 
+  //New DB state variables after removing references 
+  const [studentGrades, setStudentGrades] = useState([]);
+  const [enrolledIn, setEnrolledIn] = useState([]);
 
 
 
@@ -59,48 +61,13 @@ const Students = () => {
         const data = doc.data();
         let enrolledInList = [];
   
-        // Check if student is enrolled in any classes
-        if (data.enrolledIn && data.enrolledIn.length > 0) {
-          // Loop through each class and fetch class names
-          for (const classRef of data.enrolledIn) {
-            try {
-              //Get the data for each class the student is enrolled in
-              const classDoc = await getDoc(classRef);
-              if (classDoc.exists) {
-                const classData = classDoc.data();
-                enrolledInList.push(classData.Name);
-              } else {
-                console.log("Class document not found");
-              }
-            } catch (error) {
-              console.error("Error fetching class data:", error);
-            }
-          }
-        } else {
-          console.log('N/A');
-        }
-  
-        // Fetch teacher name
-        let teacherName = "N/A";
-        if (data.Teacher) {
-          try {
-            const teacherDoc = await getDoc(data.Teacher);
-            if (teacherDoc.exists) {
-              const teacherData = teacherDoc.data();
-              teacherName = `${teacherData.First} ${teacherData.Last}`;
-            }
-          } catch (error) {
-            console.error("Error fetching teacher data:", error);
-          }
-        }
-  
         studentsList.push({
           id: doc.id,
           First: data.First,
           Last: data.Last,
           Grade: data.Grade,
-          enrolledIn: enrolledInList,
-          Teacher: teacherName,
+          enrolledIn: data.enrolledIn,
+          Teacher: data.Teacher,
         });
       }
   
@@ -135,6 +102,7 @@ const Students = () => {
 
   const handleStudentClick = async (student) => {
     setSelectedStudent(student);
+    await fetchStudentGrades(student.id);
   };
 
 
@@ -209,6 +177,29 @@ const Students = () => {
   };
   
 
+<<<<<<< HEAD
+=======
+
+
+
+
+  const createGradebookEntry = async (studentId, classId) => {
+    try {
+      await addDoc(collection(db, "Gradebook"), {
+        studentId,
+        classId,
+        grade: 0,
+      });
+      console.log(`Gradebook entry created for student ${studentId} in class ${classId}`);
+    } catch (error) {
+      console.error("Error adding Gradebook entry: ", error);
+    }
+  };
+
+
+
+
+>>>>>>> main
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -217,32 +208,25 @@ const Students = () => {
       alert("Please fill in all fields");
       return;
     }
-
-    let teacher_id = await getTeacherIdByName(Teacher.First, Teacher.Last);
-    const teacherRef = doc(db, "teachers", teacher_id);
-    //console.log(enrolledIn); 
-
-    const enrolledInRefs = await Promise.all(
-      enrolledIn.map(async (className) => await getClassRefByName(className))
-    );
-    
     
     const newStudent = {
       First,
       Last,
       Grade,
-      Teacher: teacherRef,
-      enrolledIn: enrolledInRefs,
+      Teacher,
+      enrolledIn,
     };
-  
-    // Log the newStudent object before adding it to Firestore
-    console.log("Submitting new student: ", newStudent);
+    
     
     try {
       const docRef = await addDoc(collection(db, "Students"), newStudent);
       console.log("Document written with ID: ", docRef.id);
       fetchStudents();
       
+      //Now create gradebook enteries for the courses students were enrolled in
+      enrolledIn.forEach((classId) => {
+        createGradebookEntry(docRef.id, classId);
+      });
 
       // Clear form fields after submission for better user experience
       setFirst("");
@@ -253,6 +237,8 @@ const Students = () => {
     } catch (error) {
       console.error("Error adding document: ", error);
     }
+
+    
   };
 
   // TODO: Handlers for the deletion of student from the list, reversing the way we worked with handleSubmit
@@ -295,16 +281,14 @@ const Students = () => {
   //
 
   const handleCheckboxChange = (event) => {
-    //From internet 
     const value = event.target.value;
     setEnrolledIn((prev) => {
       if (prev.includes(value)) {
-        return prev.filter((className) => className !== value);
+        return prev.filter((classId) => classId !== value);
       } else {
         return [...prev, value];
       }
     });
-    
   };
 
   useEffect(() => {
@@ -314,6 +298,7 @@ const Students = () => {
         const teachersList = [];
         grabInformation.forEach((doc) => {
           const data = doc.data();
+          data.id = doc.id; 
           teachersList.push(data);
         });
         setTeachers(teachersList);
@@ -333,9 +318,11 @@ const Students = () => {
         const classesList = [];
         grabInformation.forEach((doc) => {
           const data = doc.data();
+          data.id = doc.id; 
           classesList.push(data);
         });
         setClasses(classesList);
+        //console.log("classes" , classes);
       } catch (error) {
         console.error("Error fetching classes:", error);
       }
@@ -348,6 +335,39 @@ const Students = () => {
 
 
 
+
+  const fetchStudentGrades = async (studentId) => {
+    try {
+      // Create a query against the Gradebook collection where the Student field matches the studentId
+      const gradebookQuery = query(
+        collection(db, "Gradebook"),
+        where("studentId", "==", studentId)
+      );
+
+      //console.log("F" + studentId + "F");
+  
+      // Fetch the documents that match the query
+      const gradebookSnapshot = await getDocs(gradebookQuery);
+  
+      const grades = [];
+  
+      // Iterate through each document in the query snapshot
+      gradebookSnapshot.forEach((doc) => {
+        const curGrade = doc.data();
+        console.log("   ", curGrade);
+        grades.push(curGrade);
+      });
+  
+      // Set the student grades state
+      setStudentGrades(grades);
+      console.log(grades);
+    } catch (error) {
+      console.error("Error fetching student grades: ", error);
+    }
+  };
+  
+  
+  
 
 
   //
@@ -370,7 +390,7 @@ const Students = () => {
               placeholder="Filter by name"
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <Button onClick={handleSearch} variant="contained">
+            <Button sx={{background: '#147a7c', '&:hover': {backgroundColor: '#0f5f60',},}} onClick={handleSearch} variant="contained">
               Search
             </Button>
           </div>
@@ -413,36 +433,36 @@ const Students = () => {
             </Select>
           </FormControl>
           <FormControl fullWidth margin="normal">
-            <FormLabel>Teacher</FormLabel>
-            <Select
-              value={Teacher}
-              onChange={(e) => setTeacher(e.target.value)}
-            >
-              <MenuItem value="">Select a teacher</MenuItem>
-              {teachers.map((teacher, index) => (
-                <MenuItem key={index} value={teacher}>
-                  {teacher.First} {teacher.Last}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl component="fieldset" fullWidth margin="normal">
-            <FormLabel component="legend">Enrolled In</FormLabel>
-            {classes.map((curClass, index) => (
-              <FormControlLabel
-                key={index}
-                control={
-                  <Checkbox
-                    checked={enrolledIn.includes(curClass.Name)}
-                    onChange={handleCheckboxChange}
-                    value={curClass.Name}
-                  />
-                }
-                label={curClass.Name}
-              />
+          <FormLabel>Teacher</FormLabel>
+          <Select
+            value={Teacher}
+            onChange={(e) => setTeacher(e.target.value)}
+          >
+            <MenuItem value="">Select a teacher</MenuItem>
+            {teachers.map((teacher, index) => (
+              <MenuItem key={index} value={teacher.id}>
+                {teacher.First} {teacher.Last}
+              </MenuItem>
             ))}
-          </FormControl>
-          <Button type="submit" variant="contained" color="primary">Add Student</Button>
+          </Select>
+        </FormControl>
+        <FormControl component="fieldset" fullWidth margin="normal">
+      <FormLabel component="legend">Enrolled In</FormLabel>
+      {classes.map((curClass, index) => (
+        <FormControlLabel
+          key={index}
+          control={
+            <Checkbox
+              checked={enrolledIn.includes(curClass.id)}
+              onChange={handleCheckboxChange}
+              value={curClass.id}
+            />
+          }
+          label={curClass.Name}
+        />
+      ))}
+    </FormControl>
+          <Button sx={{background: '#147a7c', '&:hover': {backgroundColor: '#0f5f60',},}} type="submit" variant="contained" color="primary">Add Student</Button>
         </form>
       )}
     </div>
@@ -508,7 +528,7 @@ const Students = () => {
               <div className="academic-info">
                 <h2>Academic Information </h2>
                 <p> Enrolled In: {selectedStudent.enrolledIn ? selectedStudent.enrolledIn.join(', ') : "N/A"}</p>
-                <p> Average Grade: {selectedStudent.Grade || "N/A"}</p>
+                <p> Grade Level: {selectedStudent.Grade || "N/A"}</p>
                 <p>Teacher: {selectedStudent.Teacher || "N/A"}</p>
               </div>
               <div className="contact-info">
@@ -526,6 +546,17 @@ const Students = () => {
                 <p> Birthday: {selectedStudent.Birthday || "N/A"}</p>
                 <p> Residence: {selectedStudent.Residence || "N/A"}</p>
               </div>
+              <div className="personal-info">
+                <h2> Grades</h2>
+                {studentGrades.length > 0 ? (
+                  studentGrades.map((grade, index) => (
+                    <p key={index}>{grade.classId}: {grade.grade}</p>
+                  ))
+                ) : (
+                  <p>No grades available</p>
+                )}
+              </div>
+
               <div className="update-student">
                 <h2> Edit/Update Student</h2>
                 {/* TODO: Must provide an option where we can remove/edit/update the student through a button */}
@@ -542,6 +573,7 @@ const Students = () => {
                     onClick={handleEdit}
                     variant="contained"
                     color="primary"
+                    sx={{background: '#147a7c', '&:hover': {backgroundColor: '#0f5f60',},}}
                   >
                     Edit Information
                   </Button>
