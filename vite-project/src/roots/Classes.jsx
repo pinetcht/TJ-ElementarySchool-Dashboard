@@ -182,6 +182,12 @@ const Classes = () => {
 
   return (
     <>
+      <div className="image-container">
+        <img src="/homePageSchool.jpeg" alt="School Image" className="full-width-image"></img>
+        <div className="overlay"></div>
+        <h1 className="homeScreenHeader">Classes</h1>
+    </div>
+    <hr></hr>
       {!classSelected ? (
         <>
           <h1>Class roster</h1>
