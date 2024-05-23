@@ -28,7 +28,7 @@ import {
 const Classes = () => {
   const [students, setStudents] = useState(null);
   const [thisClass, setClass] = useState(null);
-  const [classes, setAllClasses] = useState(null);
+  const [allClasses, setAllClasses] = useState(null);
 
   const [grade, setGrade] = useState();
   const [editGrade, setEditGrade] = useState(false);
@@ -39,17 +39,34 @@ const Classes = () => {
   const [teacherNames, setTeacherNames] = useState({});
   const [classSelected, setClassSelected] = useState(false);
 
-  const fetchStudents = async () => {
+  const fetchStudents = async (classId) => {
     try {
-      const querySnapshot = await getDocs(collection(db, "Students"));
-      if (querySnapshot != null) {
-        const allStudents = querySnapshot.docs.map((doc, key) => ({
-          id: doc.id,
-          key,
-          ...doc.data(),
-        }));
+      const querySnapshot = await getDoc(doc(db, "Classes", classId));
 
-        setStudents(allStudents);
+      if (querySnapshot != null && classId) {
+        const classData = querySnapshot.data();
+
+        console.log(classData)
+        console.log(classData.Students)
+        const studentIds = classData.Students;
+
+        const studentsList = []
+        for (let studentId of studentIds) {
+          const fetchedStudent = await getDoc(doc(db, "Students", studentId))
+          const student = fetchedStudent.data()
+
+          studentsList.push({
+            id: studentId,
+            First: student.First,
+            Last: student.Last,
+            Grade: student.Grade,
+            enrolledIn: student.enrolledIn,
+            Teacher: student.Teacher,
+          });
+        }
+    
+        setStudents(studentsList);
+
       } else {
         console.log("No student document!");
       }
@@ -58,13 +75,11 @@ const Classes = () => {
     }
   };
 
-  useEffect(() => {
-    fetchStudents();
-  }, []);
 
   const fetchAllTeacherNames = async () => {
     const names = {};
-    for (const eachClass of classes) {
+
+    for (const eachClass of allClasses) {
       if (eachClass.Teacher) {
         const name = await fetchTeacherName(eachClass.Teacher);
         names[eachClass.Teacher] = name;
@@ -72,10 +87,6 @@ const Classes = () => {
     }
     setTeacherNames(names);
   }
-
-  useEffect(() => {
-    fetchAllTeacherNames()
-  }, [classes])
 
   const fetchTeacherName = async (teacherRef) => {
     try {
@@ -95,20 +106,20 @@ const Classes = () => {
   };
 
 
-  const fetchSelectedClass = async () => {
+  const fetchSelectedClass = async (classId) => {
     try {
 
       let querySnapshot = null
       
       if(thisClass) {
         querySnapshot = await getDoc(
-          doc(db, "Classes", thisClass.id)
+          doc(db, "Classes", classId)
         );
       }
       
       if (querySnapshot != null) {
         const fetchedClass = querySnapshot.data();
-        setClass(fetchedClass);
+        // setClass(fetchedClass);
 
 
         if (fetchedClass.Teacher) {
@@ -154,15 +165,6 @@ const Classes = () => {
   };
 
 
-  useEffect(() => {
-    if(thisClass) {
-      fetchSelectedClass();
-      fetchStudentGrades(thisClass.id);
-      console.log(thisClass)
-    }
-
-  }, [thisClass]);
-
   const fetchAllClasses = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "Classes"));
@@ -187,15 +189,38 @@ const Classes = () => {
     fetchAllClasses();
   }, []);
 
-  const handleSubmit = async (e, index) => {
+      
+  useEffect(() => {
+    fetchAllTeacherNames()
+  }, [allClasses])
+
+  useEffect(() => {
+    if(thisClass) {
+      fetchStudents(thisClass.id);
+      fetchSelectedClass(thisClass.id);
+      fetchStudentGrades(thisClass.id);
+
+      console.log(students)
+    }
+  }, [thisClass]);
+
+  
+
+  const handleSubmit = async (e, studentId) => {
     e.preventDefault();
-    await updateDoc(doc(db, "Students", index), {
+    await updateDoc(doc(db, "Students", studentId), {
       Grade: grade,
     });
 
     setEditGradeIndex(null);
     setEditGrade(false);
-    fetchStudents();
+
+    const updatedGrades = { ...studentGrades };
+    updatedGrades[studentId] = grade;
+
+    setStudentGrades(updatedGrades);
+
+    fetchStudents(thisClass.id);
   };
 
   const handleGradeChange = (e) => {
@@ -221,7 +246,7 @@ const Classes = () => {
         <>
           <h1>Class roster</h1>
           <p> Select a class to view additional info! </p>
-          {(classes && teacherNames) && (
+          {(allClasses && teacherNames) && (
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 550 }} aria-label="simple table">
                 <TableHead>
@@ -231,8 +256,8 @@ const Classes = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {classes &&
-                    classes.map((eachClass) => (
+                  {allClasses &&
+                    allClasses.map((eachClass) => (
                       <TableRow
                         key={eachClass.id}
                         onClick={() => handleClassClick(eachClass)}
@@ -283,6 +308,8 @@ const Classes = () => {
                     <b>End Time:</b> {thisClass.End_time}
                     <br></br>
                     <b>Teacher:</b> {teacherNames[thisClass.Teacher]  || "Loading..."}
+                    <br></br>
+                    <b>Average Grade:</b> {thisClass.Average_grade}
                   </p>
                 </div>
               </>
@@ -333,8 +360,7 @@ const Classes = () => {
                               variant="filled"
                               onClick={() => {
                                 setEditGrade(!editGrade);
-                                setEditGradeIndex(student.id);                                
-                                setGrade(student.Grade);
+                                setEditGradeIndex(student.id);
                               }}
                             >
                               <EditIcon />
