@@ -373,7 +373,7 @@ const Classes = () => {
                           {eachClass.Name}
                         </TableCell>
                         <TableCell align="left">
-                          { teacherNames[eachClass.Teacher] || "Loading..."}
+                          { teacherNames[eachClass.Teacher] || "N/A"}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -405,7 +405,7 @@ const Classes = () => {
                     <br></br>
                     <b>End Time:</b> {thisClass.End_time}
                     <br></br>
-                    <b>Teacher:</b> {teacherNames[thisClass.Teacher]  || "Loading..."}
+                    <b>Teacher:</b> {teacherNames[thisClass.Teacher]  || "N/A"}
                     <br></br>
                   </p>
                 </div>
