@@ -398,7 +398,7 @@ const Teachers = () => {
                     <input
                       type="text"
                       name="Subject"
-                      value={editedTeacher.Subject}
+                      value={editedTeacher.Subject || ""}
                       onChange={handleInputChange}
                     />
                     <br />
@@ -412,7 +412,7 @@ const Teachers = () => {
                   </div>
                 ) : (
                   <div>
-                    <p>Department: {selectedTeacher.Subject}</p>
+                    <p>Department: {selectedTeacher.Subject || "N/A"}</p>
                     <p>Supervisor: {selectedTeacher.Supervisor || "N/A"}</p>
                   </div>
                 )}
