@@ -135,6 +135,23 @@ const Teachers = () => {
     return; 
   }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
   return (
     <div>
       <div className="image-container">

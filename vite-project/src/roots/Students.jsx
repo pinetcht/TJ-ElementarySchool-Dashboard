@@ -140,6 +140,8 @@ const Students = () => {
     // Fetch the class names
     const classNames = await fetchClassNames(student.enrolledIn);
     setSelectedClassNames(classNames);
+
+
   };
 
   // Getter function that converts the classIds into names
@@ -314,13 +316,23 @@ const Students = () => {
   };
 
   const handleSaveClick = async () => {
+
+
+
     try {
       const studentRef = doc(db, "Students", selectedStudent.id);
       const studentSnapshot = await getDoc(studentRef);
       const studentData = studentSnapshot.data();
 
-      const updatedStudent = { ...studentData, ...editedStudent };
+      //console.log("Original: ", studentData.enrolledIn); 
+      //console.log("E : ", editedStudent.enrolledIn); 
 
+      const originalClasses = studentData.enrolledIn;
+      const updatedClasses = editedStudent.enrolledIn;
+
+
+      const updatedStudent = { ...studentData, ...editedStudent };
+      
       await updateDoc(studentRef, updatedStudent);
       setSelectedStudent(updatedStudent);
       setIsEditing(false);
@@ -332,12 +344,45 @@ const Students = () => {
       console.log(updatedStudents);
       setStudents(updatedStudents);
       setAllStudents(updatedStudents);
+      
 
-      // Hide the right container after saving
-      setShowRightContainer(false);
+
+      //Grade book part
+
+      const addedClasses = updatedClasses.filter(cls => !originalClasses.includes(cls));
+      const removedClasses = originalClasses.filter(cls => !updatedClasses.includes(cls));
+
+       // Update the Gradebook for added classes
+      for (const cls of addedClasses) {
+        const gradebookEntry = {
+          studentId: selectedStudent.id,
+          classId: cls,
+          grades: {}
+        };
+        await addDoc(collection(db, "Gradebook"), gradebookEntry);
+      }
+
+      // Remove entries from the Gradebook for removed classes
+      const gradebookSnapshot = await getDocs(collection(db, "Gradebook"));
+      gradebookSnapshot.forEach(async (doc) => {
+        const entry = doc.data();
+        if (entry.studentId === selectedStudent.id && removedClasses.includes(entry.classId)) {
+          await deleteDoc(doc.ref);
+        }
+      });
+
+        // Hide the right container after saving
+        setShowRightContainer(false);
+
     } catch (error) {
       console.error("Error updating student data: ", error);
     }
+
+
+
+
+    //Get grade book to work correctly 
+
   };
 
   // TODO: Handlers for the deletion of student from the list, reversing the way we worked with handleSubmit
