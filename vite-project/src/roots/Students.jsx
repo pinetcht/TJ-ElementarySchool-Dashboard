@@ -661,6 +661,28 @@ const Students = () => {
                           </MenuItem>
                         ))}
                       </Select>
+
+                      <FormControl fullWidth margin="normal">
+                  <FormLabel>Grade</FormLabel>
+                  <Select
+                    value={editedStudent.Grade || []}
+                    onChange={(e) =>
+                      setEditedStudent({
+                        ...editedStudent,
+                        Grade: e.target.value,
+                      })
+                    }
+                  >
+                    <MenuItem value="">Select a grade</MenuItem>
+                    <MenuItem value="Kindergarten">Kindergarten</MenuItem>
+                    <MenuItem value="1st">1st</MenuItem>
+                    <MenuItem value="2nd">2nd</MenuItem>
+                    <MenuItem value="3rd">3rd</MenuItem>
+                    <MenuItem value="4th">4th</MenuItem>
+                    <MenuItem value="5th">5th</MenuItem>
+                  </Select>
+                </FormControl>
+
                     </FormControl>
                     <br />
                     <FormControl fullWidth margin="normal">
