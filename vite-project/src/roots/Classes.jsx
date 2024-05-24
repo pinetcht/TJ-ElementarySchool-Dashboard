@@ -365,7 +365,7 @@ const Classes = () => {
                           scope="row"
                           sx={{
                             "&.MuiTableCell-root:hover": {
-                              color: "blue",
+                              color: "#147a7c",
                               cursor: "pointer"
                             },
                           }}
