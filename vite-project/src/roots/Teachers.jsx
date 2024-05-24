@@ -233,21 +233,20 @@ const Teachers = () => {
                   margin="normal"
                 />
 
-                <FormControl fullWidth margin="normal">
-                  <FormLabel>Subject</FormLabel>
-                  <Select
-                    value={Subject}
-                    onChange={(e) => { setSubject(e.target.value) }                    
-                    }
-                  >
-                    <MenuItem value="">Select a Subject</MenuItem>
-                    {noTeacherClasses.map((eachClass, index) => (
-                      <MenuItem key={index}>
-                        {eachClass}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+              <FormControl fullWidth margin="normal">
+                <FormLabel>Subject</FormLabel>
+                <Select
+                  value={Subject || ""}
+                  onChange={(e) => setSubject(e.target.value)}
+                >
+                  <MenuItem value="">Select a Subject</MenuItem>
+                  {noTeacherClasses.map((eachClass, index) => (
+                    <MenuItem key={index} value={eachClass}>
+                      {eachClass}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
                 <TextField
                   label="Age"
