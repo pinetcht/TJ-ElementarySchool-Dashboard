@@ -21,32 +21,40 @@
   z-index: 1;
 }
 
-
 .teacherScreenHeader {
   position: absolute;
-    top: 27%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2; 
-    color: white; 
-    font-size: 5em; 
-    text-align: center; 
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    animation: fadeIn 1s ease-in-out;
-    font-family: 'Lato', sans-serif;
+  top: 27%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2; 
+  color: white; 
+  font-size: 5em; 
+  text-align: center; 
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 1s ease-in-out;
+  font-family: 'Lato', sans-serif;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: #ccc;
+  margin: 20px 0;
 }
 
 .main-wrapper {
   display: flex;
-  padding: 20px;
+  padding: 0px;
+  gap: 20px;
 }
 
 .left-panel, .right-panel {
   flex: 1;
   padding: 20px;
-  background: #fff;
+  background: #ffffff00;
   border-radius: 8px;
   margin: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .left-panel {
@@ -85,7 +93,7 @@
   border-bottom: none;
 }
 
-.teacher-avatar, .teacher-avatar-large {
+.teacher-avatar {
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -96,6 +104,8 @@
 .teacher-avatar-large {
   width: 100px;
   height: 100px;
+  border-radius: 50%;
+  background: #ddd;
   margin: 0 auto 20px;
 }
 
@@ -106,6 +116,10 @@
 
 .teacher-name {
   font-weight: bold;
+}
+
+.teacher-detail {
+  text-align: center;
 }
 
 .teacher-detail h3 {
