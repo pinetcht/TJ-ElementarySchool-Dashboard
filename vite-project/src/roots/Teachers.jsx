@@ -211,8 +211,9 @@ const Teachers = () => {
         console.log("Class updated with new teacher ID.");
       }
   
-      fetchTeachers();
-
+      //fetchTeachers();  
+      fetchAllClasses(); 
+      fetchNoTeacherClasses();
 
       //console.log("Document written with ID: ", docRef.id);
       fetchTeachers();
