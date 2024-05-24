@@ -693,7 +693,7 @@ const Students = () => {
                         ? selectedClassNames.join(", ")
                         : "N/A"}
                     </p>
-                    <p>Average Grade: {selectedStudent.Grade || "N/A"}</p>
+                    <p>Grade Level: {selectedStudent.Grade || "N/A"}</p>
                     <p>Teacher: {selectedTeacherName || "N/A"}</p>
                   </div>
                 )}
