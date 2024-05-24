@@ -99,7 +99,7 @@
 
 .student-row :hover{
   cursor: pointer;
-  color: blue;
+  color: #147a7c;
 }
 
 /* Styling for table body rows */
