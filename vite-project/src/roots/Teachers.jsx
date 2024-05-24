@@ -234,7 +234,7 @@ const Teachers = () => {
                 />
 
               <FormControl fullWidth margin="normal">
-                <FormLabel>Subject</FormLabel>
+                <FormLabel>Course</FormLabel>
                 <Select
                   value={Subject || ""}
                   onChange={(e) => setSubject(e.target.value)}
