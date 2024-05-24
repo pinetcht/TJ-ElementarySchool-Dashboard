@@ -30,7 +30,7 @@ import {
 const Classes = () => {
   const [students, setStudents] = useState(null);
   const [thisClass, setClass] = useState(null);
-  const [allClasses, setAllClasses] = useState(null);
+  const [allClasses, setAllClasses] = useState([]);
 
   const [grade, setGrade] = useState();
   const [editGrade, setEditGrade] = useState(false);
@@ -41,6 +41,55 @@ const Classes = () => {
   const [teacherNames, setTeacherNames] = useState({});
   const [classSelected, setClassSelected] = useState(false);
 
+  //Re renders the students when a grade is edited 
+  useEffect(() => {
+    if (thisClass) {
+      const fetchUpdatedData = async () => {
+        try {
+          const gradebookQuery = query(
+            collection(db, "Gradebook"),
+            where("classId", "==", thisClass.id)
+          );
+  
+          const querySnapshot = await getDocs(gradebookQuery);
+          const updatedGrades = {};
+  
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            updatedGrades[data.studentId] = data.grade;
+          });
+  
+          setStudentGrades(updatedGrades);
+  
+          const studentsList = [];
+  
+          for (const doc of querySnapshot.docs) {
+            const data = doc.data();
+            const student_id = data.studentId;
+  
+            const studentIdentity = await fetchStudentById(student_id);
+            const studentData = {
+              id: student_id,
+              grade: data.grade,
+              First: studentIdentity ? studentIdentity.First : null,
+              Last: studentIdentity ? studentIdentity.Last : null,
+              studentId: data.studentId,
+              classId: data.classId,
+            };
+  
+            studentsList.push(studentData);
+          }
+  
+          setStudents(studentsList);
+        } catch (error) {
+          console.error("Error fetching updated data: ", error);
+        }
+      };
+  
+      fetchUpdatedData();
+    }
+  }, [studentGrades, thisClass]);
+  
 
   const fetchStudentById = async (studentId) => {
     try {
@@ -76,11 +125,14 @@ const Classes = () => {
         
         const studentIdentity = await fetchStudentById(student_id);
         console.log("ID : ", studentIdentity);
-  
+        console.log("grade" , data.grade);
+
         const studentData = {
           grade: data.grade,
           First: studentIdentity ? studentIdentity.First : null,
           Last: studentIdentity ? studentIdentity.Last : null,
+          studentId: data.studentId,
+          classId: data.classId,
         };
   
         studentsList.push(studentData);
@@ -88,6 +140,7 @@ const Classes = () => {
   
       //console.log("Students List: ", studentsList);
       setStudents(studentsList);
+      console.log("final " ,studentsList)
       return studentsList;
     } catch (error) {
       console.error("Error fetching students: ", error);
@@ -194,6 +247,8 @@ const Classes = () => {
           ...doc.data(),
         }));
 
+        console.log("all classes" , allClasses); 
+
         setAllClasses(allClasses);
       } else {
         console.log("No classes document!");
@@ -225,25 +280,47 @@ const Classes = () => {
 
   
 
-  const handleSubmit = async (e, studentId) => {
+  const handleSubmit = async (e, studentId, classId) => {
     e.preventDefault();
-    await updateDoc(doc(db, "Students", studentId), {
-      Grade: grade,
-    });
+  
+    try {
+      // Create a query to find the document where studentId and courseId match
+      const gradebookQuery = query(
+        collection(db, "Gradebook"),
+        where("studentId", "==", studentId),
+        where("classId", "==", classId)
+      );
 
-    setEditGradeIndex(null);
-    setEditGrade(false);
+      console.log(studentId, classId);
+  
+      // Execute the query
+      const querySnapshot = await getDocs(gradebookQuery);
+  
+      if (!querySnapshot.empty) {
+        // Assuming there is only one document that matches the query
+        const gradebookDoc = querySnapshot.docs[0];
+        const gradebookDocRef = doc(db, "Gradebook", gradebookDoc.id);
+  
+        // Update the grade field in the matched document
+        await updateDoc(gradebookDocRef, {
+          grade: grade,
+        });
 
-    const updatedGrades = { ...studentGrades };
-    updatedGrades[studentId] = grade;
-
-    setStudentGrades(updatedGrades);
-
-    fetchStudents(thisClass.id);
+        
+  
+        setGrade(0);
+        console.log("Grade updated successfully");
+      } else {
+        console.log("No matching document found");
+      }
+    } catch (error) {
+      console.error("Error updating grade: ", error);
+    }
   };
 
   const handleGradeChange = (e) => {
     const newGrade = e.target.value;
+    //console.log(newGrade);
     setGrade(newGrade);
   };
 
@@ -252,6 +329,7 @@ const Classes = () => {
     setClass(selectedClass);
     setClassSelected(true);
   };
+
 
   return (
     <>
@@ -285,7 +363,6 @@ const Classes = () => {
                         <TableCell
                           component="th"
                           scope="row"
-                          hover
                           sx={{
                             "&.MuiTableCell-root:hover": {
                               color: "blue",
@@ -358,7 +435,7 @@ const Classes = () => {
                           <TableCell align="left">
                             {editGrade && editGradeIndex === student.id ? (
                               <>
-                                <form onSubmit={(e) => handleSubmit(e, student.id)}>
+                                <form onSubmit={(e) => handleSubmit(e, student.studentId, student.classId)}>
                                   <TextField
                                     type="text"
                                     defaultValue={studentGrades[student.id]}
@@ -373,7 +450,7 @@ const Classes = () => {
                                 </form>
                               </>
                             ) : (
-                              studentGrades[student.id]
+                              <>{student.grade}</>
                             )}
 
                             <IconButton
